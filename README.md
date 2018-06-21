@@ -179,11 +179,11 @@ func (c UpdateFirstName) BuildEvent() (interface{}, error) {
 ## Todo
 
 - [x] First draft that avoid multiple switch
-- [ ] Stop using pointers as an arguments and return values for the `Call` function: use purely immutables aggregates. (for the moment they are actually immutables, but you need to pass a pointer to persis in `gorm`, you can save an interface (which is not a concrete type).
+- [ ] Stop using pointers as an arguments and return values for the `Call` function: use purely immutables aggregates. (for the moment they are actually immutables, but you need to pass a pointer to persist in `gorm`, you can save an interface (which is not a concrete type).
 
 ## Glossary
 
-* **Commands** Commands are responsible for: Validating attributes, Validating that the action can be performed given the current state of the application and Building the event. A `Command` can only return 1 `Event`, but it can be return mutiple `Event` types.
+* **Commands** Commands are responsible for: Validating attributes, Validating that the action can be performed given the current state of the application and Building the event. A `Command` can only return 1 `Event`, but it can be return multiple `Event` types.
 
 * **Events** are the source of truth. They are applied to `Aggregates`
 
@@ -191,7 +191,7 @@ func (c UpdateFirstName) BuildEvent() (interface{}, error) {
 
 * **Calculators** to update the state of the application. This is the `Apply` method of the `Aggregate` interface. 
 
-* **Reactors** to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Call` funciton, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Call` functin, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
+* **Reactors** to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Call` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Call` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
 
 * **Event Store** PostgresSQL
 
