@@ -1,6 +1,9 @@
 package main
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -17,11 +20,32 @@ func (e ValidationError) Error() string {
 	return e.Msg
 }
 
-// Aggregat
+type Address struct {
+	Country string `json:"country"`
+	Region  string `json:"region"`
+}
+
+type Addresses []Address
+
+func (a Addresses) Value() (driver.Value, error) {
+	j, err := json.Marshal(a)
+	return j, err
+}
+
+func (a *Addresses) Scan(src interface{}) error {
+	if bytes, ok := src.([]byte); ok {
+		return json.Unmarshal(bytes, a)
+
+	}
+	return errors.New(fmt.Sprint("Failed to unmarshal JSON from DB", src))
+}
+
+// Aggregates
 type User struct {
 	goes.BaseAggregate
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	Addresses Addresses `json:"addresses" gorm:"type:jsonb;column:addresses"`
 }
 
 func (u User) Apply(event goes.Event) goes.Aggregate {
@@ -147,7 +171,9 @@ func init() {
 }
 
 func main() {
-	user := &User{}
+	user := &User{
+		Addresses: []Address{},
+	}
 
 	c := Create{
 		FirstName: "Sysy",
