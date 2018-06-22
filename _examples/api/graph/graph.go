@@ -5,6 +5,7 @@ package graph
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/jinzhu/gorm"
 	"github.com/z0mbie42/goes"
@@ -16,6 +17,9 @@ type Api struct{}
 var NotFoundError = errors.New("Not Found")
 
 func (a *Api) Query_todos(ctx context.Context) ([]Todo, error) {
+	myValue := ctx.Value("mycustomToken").(string)
+	log.Println("Authenticated user: ", myValue)
+
 	todos := []domain.Todo{}
 	ret := []Todo{}
 
