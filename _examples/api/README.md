@@ -1,4 +1,4 @@
-This project use [goes](https://github.com/z0mbie42/goes) as event sourcing framework and This project use [gqlgen](https://github.com/vektah/gqlgen) as typed GraphQL API layer.
+This project use [goes](https://github.com/z0mbie42/goes) as event sourcing framework and [gqlgen](https://github.com/vektah/gqlgen) as a typed GraphQL API layer.
 
 ## Getting started
 
@@ -48,13 +48,14 @@ query {
 
 The project is divided in 2 subpackages: `domain` and `graph` which are 2 layers.
 
-The package `domain` contains all the domain logic (Aggregates, commands, events...). It's our domain layer and wrap all our applicaiton logic.
+The package `domain` contains all the domain logic (Aggregates, commands, events...). It's our domain layer and wrap all our application logic.
 
 The package `graph` contains all the GraphQL API related things. It's our query layer.
 
 
-## Resource:
+## Resources:
 
 * https://github.com/z0mbie42/goes
 * https://github.com/vektah/gqlgen
 * https://outcrawl.com/go-graphql-gateway-microservices/
+* https://kickstarter.engineering/event-sourcing-made-simple-4a2625113224
