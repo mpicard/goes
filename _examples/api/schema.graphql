@@ -2,11 +2,16 @@ scalar Timestamp
 
 union EventData = TodoCreatedV1 | TodoTextUpdatedV1
 
+input Filter {
+  offset: Int!
+  limit: Int!
+}
+
 type Todo {
   id: String!
   text: String!
   author: User!
-  events: [Event!]!
+  events(filter: Filter): [Event!]!
 }
 
 type User {

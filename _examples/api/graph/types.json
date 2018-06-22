@@ -1,4 +1,5 @@
 {
     "Timestamp": "github.com/z0mbie42/goes/_examples/api/graph.Timestamp",
-    "Todo": "github.com/z0mbie42/goes/_examples/api/graph.Todo"
+    "Todo": "github.com/z0mbie42/goes/_examples/api/graph.Todo",
+    "Filter": "github.com/z0mbie42/goes/_examples/api/graph.Filter"
 }

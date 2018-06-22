@@ -97,7 +97,7 @@ func (a *Api) Mutation_update_todo(ctx context.Context, updateTodo UpdateTodo) (
 	return ret, nil
 }
 
-func (a *Api) Todo_events(ctx context.Context, obj *Todo) ([]Event, error) {
+func (a *Api) Todo_events(ctx context.Context, obj *Todo, filter *Filter) ([]Event, error) {
 	todo := domain.Todo{BaseAggregate: goes.BaseAggregate{ID: obj.ID}}
 	ret := []Event{}
 
@@ -130,5 +130,19 @@ func (a *Api) Todo_events(ctx context.Context, obj *Todo) ([]Event, error) {
 		ret = append(ret, ev)
 	}
 
-	return ret, nil
+	if filter != nil {
+
+		if filter.Offset < len(ret) {
+			ret = ret[filter.Offset:]
+			if filter.Limit < len(ret) {
+				ret = ret[:filter.Limit]
+			}
+			return ret, nil
+		} else {
+			return []Event{}, nil
+		}
+
+	} else {
+		return ret, nil
+	}
 }

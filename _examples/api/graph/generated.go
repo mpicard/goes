@@ -23,7 +23,7 @@ type Resolvers interface {
 	Mutation_update_todo(ctx context.Context, input UpdateTodo) (Todo, error)
 	Query_todos(ctx context.Context) ([]Todo, error)
 
-	Todo_events(ctx context.Context, obj *Todo) ([]Event, error)
+	Todo_events(ctx context.Context, obj *Todo, filter *Filter) ([]Event, error)
 }
 
 type executableSchema struct {
@@ -416,9 +416,25 @@ func (ec *executionContext) _Todo_author(ctx context.Context, field graphql.Coll
 }
 
 func (ec *executionContext) _Todo_events(ctx context.Context, field graphql.CollectedField, obj *Todo) graphql.Marshaler {
+	args := map[string]interface{}{}
+	var arg0 *Filter
+	if tmp, ok := field.Args["filter"]; ok {
+		var err error
+		var ptr1 Filter
+		if tmp != nil {
+			ptr1, err = UnmarshalFilter(tmp)
+			arg0 = &ptr1
+		}
+
+		if err != nil {
+			ec.Error(ctx, err)
+			return graphql.Null
+		}
+	}
+	args["filter"] = arg0
 	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{
 		Object: "Todo",
-		Args:   nil,
+		Args:   args,
 		Field:  field,
 	})
 	return graphql.Defer(func() (ret graphql.Marshaler) {
@@ -431,7 +447,7 @@ func (ec *executionContext) _Todo_events(ctx context.Context, field graphql.Coll
 		}()
 
 		resTmp, err := ec.ResolverMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
-			return ec.resolvers.Todo_events(ctx, obj)
+			return ec.resolvers.Todo_events(ctx, obj, args["filter"].(*Filter))
 		})
 		if err != nil {
 			ec.Error(ctx, err)
@@ -1349,6 +1365,30 @@ func UnmarshalCreateTodo(v interface{}) (CreateTodo, error) {
 	return it, nil
 }
 
+func UnmarshalFilter(v interface{}) (Filter, error) {
+	var it Filter
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "offset":
+			var err error
+			it.Offset, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "limit":
+			var err error
+			it.Limit, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func UnmarshalUpdateTodo(v interface{}) (UpdateTodo, error) {
 	var it UpdateTodo
 	var asMap = v.(map[string]interface{})
@@ -1394,11 +1434,16 @@ var parsedSchema = schema.MustParse(`scalar Timestamp
 
 union EventData = TodoCreatedV1 | TodoTextUpdatedV1
 
+input Filter {
+  offset: Int!
+  limit: Int!
+}
+
 type Todo {
   id: String!
   text: String!
   author: User!
-  events: [Event!]!
+  events(filter: Filter): [Event!]!
 }
 
 type User {

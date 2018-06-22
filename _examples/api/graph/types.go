@@ -5,3 +5,7 @@ type Todo struct {
 	Text   string `json:"text"`
 	Author User   `json:"author"`
 }
+type Filter struct {
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}
