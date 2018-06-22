@@ -6,7 +6,9 @@
 
 ## Usage
 
-**See `_examples/user/main.go` for an usage example**
+**See `_examples/api` for a full event source GraphQL API example**
+
+**See `_examples/user` for a simple example**
 
 ```bash
 $ docker run -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres
