@@ -45,7 +45,15 @@ func chainMiddleware(mw ...middleware) middleware {
 
 func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), "mycustomToken", "z0mbie42")
+		ctx := r.Context()
+
+		// To remove... for mocking purpose
+		r.Header.Set("authorization", "secrettoken")
+		authHeader := r.Header.Get("authorization")
+
+		if authHeader == "secrettoken" {
+			ctx = context.WithValue(ctx, "authenticated_user", "z0mbie42")
+		}
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }
@@ -59,7 +67,7 @@ func main() {
 	http.Handle("/graphql", graphQLChain(
 		handler.GraphQL(graph.MakeExecutableSchema(app),
 			handler.ResolverMiddleware(func(ctx context.Context, next graphql.Resolver) (res interface{}, err error) {
-				token := ctx.Value("mycustomToken")
+				token := ctx.Value("authenticated_user")
 				_, ok := token.(string)
 				if ok != true {
 					return res, errors.New("Auth error")

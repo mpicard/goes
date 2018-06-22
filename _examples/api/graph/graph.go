@@ -17,7 +17,7 @@ type Api struct{}
 var NotFoundError = errors.New("Not Found")
 
 func (a *Api) Query_todos(ctx context.Context) ([]Todo, error) {
-	myValue := ctx.Value("mycustomToken").(string)
+	myValue := ctx.Value("authenticated_user").(string)
 	log.Println("Authenticated user: ", myValue)
 
 	todos := []domain.Todo{}
