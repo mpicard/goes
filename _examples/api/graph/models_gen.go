@@ -17,6 +17,10 @@ type Event struct {
 	Data         EventData `json:"data"`
 }
 type EventData interface{}
+type Filter struct {
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}
 type TodoCreatedV1 struct {
 	ID          string `json:"id"`
 	Text        string `json:"text"`
