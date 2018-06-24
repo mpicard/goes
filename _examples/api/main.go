@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"log"
-	"net/http"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/handler"
@@ -29,6 +29,8 @@ func init() {
 	goes.RegisterEvents(domain.CreatedV1{}, domain.TextUpdatedV1{})
 }
 
+/*
+TOREMOVE: old middlewares
 type middleware func(next http.HandlerFunc) http.HandlerFunc
 
 func chainMiddleware(mw ...middleware) middleware {
@@ -58,25 +60,38 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+*/
+
+func Auth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+		ctx = context.WithValue(ctx, "authenticated_user", "z0mbie42")
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+	}
+}
 func main() {
 	app := &graph.Api{}
-	graphQLChain := chainMiddleware(authMiddleware)
+	gin.SetMode(gin.ReleaseMode)
 
-	http.Handle("/", handler.Playground("Api", "/graphql"))
-	//http.Handle("/graphql", handler.GraphQL(graph.MakeExecutableSchema(app)))
-	http.Handle("/graphql", graphQLChain(
-		handler.GraphQL(graph.MakeExecutableSchema(app),
-			handler.ResolverMiddleware(func(ctx context.Context, next graphql.Resolver) (res interface{}, err error) {
-				token := ctx.Value("authenticated_user")
-				_, ok := token.(string)
-				if ok != true {
-					return res, errors.New("Auth error")
-				}
-				res, err = next(ctx)
-				return res, err
-			}),
-		)))
+	r := gin.Default()
+	r.Use(Auth())
+
+	r.GET("/", gin.WrapH(handler.Playground("Api", "/graphql")))
+
+	r.POST("/graphql", gin.WrapH(handler.GraphQL(graph.MakeExecutableSchema(app),
+		handler.ResolverMiddleware(func(ctx context.Context, next graphql.Resolver) (res interface{}, err error) {
+			token := ctx.Value("authenticated_user")
+			_, ok := token.(string)
+			if ok != true {
+				return res, errors.New("Auth error")
+			}
+			res, err = next(ctx)
+			return res, err
+		}),
+	)))
 
 	log.Println("Listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	r.Run()
 }
