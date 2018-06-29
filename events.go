@@ -54,7 +54,7 @@ func buildBaseEvent(evi EventInterface, metadata Metadata, aggregateID string) E
 	}
 
 	event.ID = uuidV4.String()
-	event.Timestamp = time.Now()
+	event.Timestamp = time.Now().UTC()
 	event.AggregateID = aggregateID
 	event.AggregateType = evi.AggregateType()
 	event.Action = evi.Action()
