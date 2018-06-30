@@ -54,7 +54,10 @@ type User struct {
 }
 ```
 
-Then we should describe which kinds of actions (`Event`s) can happen to our `Aggregate`.
+Then we should describe which kinds of actions (`Event`s) can happen to our `Aggregate`
+and **What** this `Events` **Change** to our `Aggregates`.
+
+The `Apply` mtehtods are our **Calculators**.
 
 ```go
 // Events
@@ -62,6 +65,14 @@ type CreatedV1 struct {
 	ID        string `json:"id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
+}
+
+func (eventData CreatedV1) Apply(agg goes.Aggregate, event goes.Event) {
+	user := agg.(*User)
+	user.ID = eventData.ID
+	user.FirstName = eventData.FirstName
+	user.LastName = eventData.LastName
+	user.CreatedAt = event.Timestamp
 }
 
 func (CreatedV1) AggregateType() string {
@@ -80,6 +91,11 @@ type FirstNameUpdatedV1 struct {
 	FirstName string `json:"first_name"`
 }
 
+func (eventData FirstNameUpdatedV1) Apply(agg goes.Aggregate, event goes.Event) {
+	user := agg.(*User)
+	user.FirstName = eventData.FirstName
+}
+
 func (FirstNameUpdatedV1) AggregateType() string {
 	return "user"
 }
@@ -92,31 +108,6 @@ func (FirstNameUpdatedV1) Version() uint64 {
 	return 1
 }
 
-```
-
-So we have an entity and changes in our world.
-
-Then we need to describe **What** this `Events` **Change** to our world (`Aggregates`).
-This is our `Calculators`:
-
-```go
-func (u User) Apply(event goes.Event) goes.Aggregate {
-	u.Version += 1
-	u.UpdatedAt = event.Timestamp
-
-	switch e := event.Data.(type) {
-	case CreatedV1:
-		fmt.Println("Created applied")
-		u.ID = e.ID
-		u.FirstName = e.FirstName
-		u.LastName = e.LastName
-		u.CreatedAt = event.Timestamp
-	case FirstNameUpdatedV1:
-		fmt.Println("FirstNameUpdated applied")
-		u.FirstName = e.FirstName
-	}
-	return &u
-}
 ```
 
 And finally, we should describe **How** we can perform these acions (`Event`s): this is our
