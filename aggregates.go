@@ -15,10 +15,16 @@ func (NilAggregate) Apply(event Event) Aggregate {
 func (NilAggregate) GetID() string {
 	panic("trying ti use a NilAggregate")
 }
+func (NilAggregate) UpdateVersion() {
+}
+
+func (NilAggregate) UpdateUpdatedAt(time.Time) {
+}
 
 type Aggregate interface {
-	Apply(Event) Aggregate
 	GetID() string
+	UpdateVersion()
+	UpdateUpdatedAt(time.Time)
 }
 
 // BaseAggregate should be embedded in all your aggregates
@@ -32,6 +38,14 @@ type BaseAggregate struct {
 
 func (a BaseAggregate) GetID() string {
 	return a.ID
+}
+
+func (agg *BaseAggregate) UpdateVersion() {
+	agg.Version += 1
+}
+
+func (agg *BaseAggregate) UpdateUpdatedAt(t time.Time) {
+	agg.UpdatedAt = t
 }
 
 // Events returns all the persisted events associated with the aggregate

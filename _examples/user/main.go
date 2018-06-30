@@ -48,24 +48,6 @@ type User struct {
 	Addresses Addresses `json:"addresses" gorm:"type:jsonb;column:addresses"`
 }
 
-func (u User) Apply(event goes.Event) goes.Aggregate {
-	u.Version += 1
-	u.UpdatedAt = event.Timestamp
-
-	switch e := event.Data.(type) {
-	case CreatedV1:
-		fmt.Println("Created applied")
-		u.ID = e.ID
-		u.FirstName = e.FirstName
-		u.LastName = e.LastName
-		u.CreatedAt = event.Timestamp
-	case FirstNameUpdatedV1:
-		fmt.Println("FirstNameUpdated applied")
-		u.FirstName = e.FirstName
-	}
-	return &u
-}
-
 func validateFirstName(firstName string) error {
 	length := len(firstName)
 
@@ -132,6 +114,14 @@ func (CreatedV1) Version() uint64 {
 	return 1
 }
 
+func (eventData CreatedV1) Apply(agg goes.Aggregate, event goes.Event) {
+	user := agg.(*User)
+	user.ID = eventData.ID
+	user.FirstName = eventData.FirstName
+	user.LastName = eventData.LastName
+	user.CreatedAt = event.Timestamp
+}
+
 type FirstNameUpdatedV1 struct {
 	FirstName string `json:"first_name"`
 }
@@ -146,6 +136,11 @@ func (FirstNameUpdatedV1) Action() string {
 
 func (FirstNameUpdatedV1) Version() uint64 {
 	return 1
+}
+
+func (eventData FirstNameUpdatedV1) Apply(agg goes.Aggregate, event goes.Event) {
+	user := agg.(*User)
+	user.FirstName = eventData.FirstName
 }
 
 func init() {
@@ -179,27 +174,27 @@ func main() {
 		FirstName: "Sysy",
 		LastName:  "42",
 	}
-	a, _, err := goes.Call(c, user, nil)
+	_, err := goes.Call(c, user, nil)
 	if err != nil {
 		panic(err)
 	}
-	user = a.(*User)
 
 	fmt.Println("----------------------------------------------")
 
 	c2 := UpdateFirstName{
 		FirstName: "z0mbie",
 	}
-	_, _, err = goes.Call(c2, user, nil)
+	_, err = goes.Call(c2, user, nil)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("User: %#v\n", user)
 	fmt.Println("----------------------------------------------")
 
 	user = &User{BaseAggregate: goes.BaseAggregate{ID: "MyNotSoRandomUUID"}}
 	pastEvents, _ := user.Events()
 	for _, event := range pastEvents {
-		user = user.Apply(event).(*User)
+		event.Apply(user)
 	}
 
 	fmt.Printf("\nFinalUser: %#v\n", user)

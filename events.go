@@ -16,6 +16,7 @@ type EventInterface interface {
 	AggregateType() string
 	Action() string
 	Version() uint64
+	Apply(Aggregate, Event)
 }
 
 type Event struct {
@@ -28,6 +29,12 @@ type Event struct {
 	Type          string      `json:"type"`
 	Data          interface{} `json:"data"`
 	Metadata      Metadata    `json:"metadata"`
+}
+
+func (event Event) Apply(aggregate Aggregate) {
+	event.Data.(EventInterface).Apply(aggregate, event)
+	aggregate.UpdateVersion()
+	aggregate.UpdateUpdatedAt(event.Timestamp)
 }
 
 type Metadata = map[string]interface{}

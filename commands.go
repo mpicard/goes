@@ -9,25 +9,25 @@ type Command interface {
 	Validate(interface{}) error
 }
 
-func Call(command Command, aggregate Aggregate, metadata Metadata) (Aggregate, Event, error) {
+func Call(command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
 	tx := DB.Begin()
 
-	aggregate, event, err := CallTx(tx, command, aggregate, metadata)
+	event, err := CallTx(tx, command, aggregate, metadata)
 	if err != nil {
 		tx.Rollback()
-		return NilAggregate{}, Event{}, err
+		return Event{}, err
 	}
 
 	err = tx.Commit().Error
 	if err != nil {
 		tx.Rollback()
-		return NilAggregate{}, Event{}, err
+		return Event{}, err
 	}
 
-	return aggregate, event, nil
+	return event, nil
 }
 
-func CallTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata) (Aggregate, Event, error) {
+func CallTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
 	var err error
 
 	// if aggregate instance exists, ensure to lock the row before processing the command
@@ -37,37 +37,38 @@ func CallTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata
 
 	err = command.Validate(aggregate)
 	if err != nil {
-		return NilAggregate{}, Event{}, err
+		return Event{}, err
 	}
 
 	data, err := command.BuildEvent()
 	if err != nil {
-		return NilAggregate{}, Event{}, err
+		return Event{}, err
 	}
 
 	event := buildBaseEvent(data.(EventInterface), metadata, aggregate.GetID())
 	event.Data = data
-	aggregate = aggregate.Apply(event)
-
+	event.Apply(aggregate)
 	// in Case of Create event
 	event.AggregateID = aggregate.GetID()
 
 	err = tx.Save(aggregate).Error
 	if err != nil {
-		return NilAggregate{}, Event{}, err
+		return Event{}, err
 	}
 
 	eventDBToSave, err := event.Encode()
 	if err != nil {
-		return NilAggregate{}, Event{}, err
+		return Event{}, err
 	}
 
 	err = tx.Create(&eventDBToSave).Error
 	if err != nil {
-		return NilAggregate{}, Event{}, err
+		return Event{}, err
 	}
 
-	Dispatch(event)
+	if err = Dispatch(event); err != nil {
+		return Event{}, nil
+	}
 
-	return aggregate, event, nil
+	return event, nil
 }
