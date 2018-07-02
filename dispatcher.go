@@ -54,7 +54,7 @@ func Dispatch(event Event) error {
 		// it can be something like a projection
 		for _, syncReactor := range reactors.Sync {
 			if err := syncReactor(event); err != nil {
-				return nil
+				return err
 			}
 		}
 
