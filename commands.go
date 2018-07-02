@@ -66,8 +66,9 @@ func CallTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata
 		return Event{}, err
 	}
 
-	if err = Dispatch(event); err != nil {
-		return Event{}, nil
+	err = Dispatch(event)
+	if err != nil {
+		return Event{}, err
 	}
 
 	return event, nil
