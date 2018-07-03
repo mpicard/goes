@@ -2,39 +2,42 @@ package goes
 
 import (
 	"strconv"
+
+	"github.com/jinzhu/gorm"
 )
 
-type Reactor = func(Event) error
+type AsyncReactor = func(Event) error
+type SyncReactor = func(*gorm.DB, Event) error
 
 var reactorRegistry = map[string]registryReactors{}
 
 type registryReactors struct {
-	Sync  []Reactor
-	Async []Reactor
+	Sync  []SyncReactor
+	Async []AsyncReactor
 }
 
 // On is used to register events
-func On(event EventInterface, sync []Reactor, async []Reactor) {
+func On(event EventInterface, sync []SyncReactor, async []AsyncReactor) {
 	eventType := event.AggregateType() +
 		"." + event.Action() +
 		"." + strconv.FormatUint(event.Version(), 10)
 
 	if sync == nil {
-		sync = []Reactor{}
+		sync = []SyncReactor{}
 	}
 	if async == nil {
-		async = []Reactor{}
+		async = []AsyncReactor{}
 	}
 
-	var newSync []Reactor
-	var newAsync []Reactor
+	var newSync []SyncReactor
+	var newAsync []AsyncReactor
 
 	if reactors, ok := reactorRegistry[eventType]; ok == true {
 		newSync = reactors.Sync
 		newAsync = reactors.Async
 	} else {
-		newSync = []Reactor{}
-		newAsync = []Reactor{}
+		newSync = []SyncReactor{}
+		newAsync = []AsyncReactor{}
 	}
 
 	newSync = append(newSync, sync...)
@@ -43,7 +46,7 @@ func On(event EventInterface, sync []Reactor, async []Reactor) {
 	reactorRegistry[eventType] = registryReactors{Sync: newSync, Async: newAsync}
 }
 
-func Dispatch(event Event) error {
+func Dispatch(tx *gorm.DB, event Event) error {
 	data := event.Data.(EventInterface)
 	eventType := data.AggregateType() +
 		"." + data.Action() +
@@ -53,7 +56,7 @@ func Dispatch(event Event) error {
 		// dispatch sync reactor synchronously
 		// it can be something like a projection
 		for _, syncReactor := range reactors.Sync {
-			if err := syncReactor(event); err != nil {
+			if err := syncReactor(tx, event); err != nil {
 				return err
 			}
 		}

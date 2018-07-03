@@ -162,7 +162,7 @@ func init() {
 		return nil
 	}
 
-	goes.On(FirstNameUpdatedV1{}, []goes.Reactor{simpleReactor}, nil)
+	goes.On(FirstNameUpdatedV1{}, nil, []goes.AsyncReactor{simpleReactor})
 }
 
 func main() {
