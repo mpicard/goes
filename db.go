@@ -27,3 +27,7 @@ func InitDB(dbConn string, logMode bool) error {
 	DB.LogMode(logMode)
 	return nil
 }
+
+func IsRecordNotFoundError(err error) bool {
+	return gorm.IsRecordNotFoundError(err)
+}
