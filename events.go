@@ -90,7 +90,7 @@ func Events() ([]Event, error) {
 
 // RegisterEvents should be used a the beginning of your application to register all
 // your events types
-func RegisterEvents(events ...EventInterface) {
+func Register(aggregate Aggregate, events ...EventInterface) {
 
 	for _, event := range events {
 		eventType := event.AggregateType() +

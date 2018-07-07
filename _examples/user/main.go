@@ -154,7 +154,7 @@ func init() {
 	user := &User{}
 	goes.DB.DropTable(user)
 	goes.DB.AutoMigrate(user)
-	goes.RegisterEvents(FirstNameUpdatedV1{}, CreatedV1{})
+	goes.Register(&User{}, FirstNameUpdatedV1{}, CreatedV1{})
 
 	simpleReactor := func(event goes.Event) error {
 		data := event.Data.(FirstNameUpdatedV1)
