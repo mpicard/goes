@@ -12,6 +12,8 @@ import (
 
 var eventRegistry = map[string]reflect.Type{}
 
+type Metadata = map[string]interface{}
+
 type EventInterface interface {
 	AggregateType() string
 	Action() string
@@ -20,15 +22,16 @@ type EventInterface interface {
 }
 
 type Event struct {
-	ID            string      `json:"id" gorm:"type:uuid;primary_key"`
-	Timestamp     time.Time   `json:"timestamp"`
-	AggregateID   string      `json:"aggregate_id"`
-	AggregateType string      `json:"aggregate_type"`
-	Action        string      `json:"action"`
-	Version       uint64      `json:"version"`
-	Type          string      `json:"type"`
-	Data          interface{} `json:"data"`
-	Metadata      Metadata    `json:"metadata"`
+	ID                   string      `json:"id" gorm:"type:uuid;primary_key"`
+	Timestamp            time.Time   `json:"timestamp"`
+	AggregateID          string      `json:"aggregate_id"`
+	AggregateType        string      `json:"aggregate_type"`
+	Action               string      `json:"action"`
+	Version              uint64      `json:"version"`
+	Type                 string      `json:"type"`
+	Data                 interface{} `json:"data"`
+	Metadata             Metadata    `json:"metadata"`
+	NonPersistedMetadata Metadata    `json:"-" gorm:"-"`
 }
 
 func (event Event) Apply(aggregate Aggregate) {
@@ -36,8 +39,6 @@ func (event Event) Apply(aggregate Aggregate) {
 	aggregate.UpdateVersion()
 	aggregate.UpdateUpdatedAt(event.Timestamp)
 }
-
-type Metadata = map[string]interface{}
 
 type EventDB struct {
 	ID            string    `json:"id"`
