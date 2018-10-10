@@ -1,6 +1,9 @@
 package goes
 
 import (
+	"fmt"
+	"reflect"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -29,6 +32,16 @@ func Call(command Command, aggregate Aggregate, metadata Metadata) (Event, error
 
 func CallTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
 	var err error
+
+	// verify that the aggregate is a pointer
+	rv := reflect.ValueOf(aggregate)
+	if rv.Kind() != reflect.Ptr {
+		return Event{}, fmt.Errorf("calling command on a non pointer type %s",
+			reflect.TypeOf(aggregate))
+	}
+	if rv.IsNil() {
+		return Event{}, fmt.Errorf("calling command on nil %s", reflect.TypeOf(aggregate))
+	}
 
 	// if aggregate instance exists, ensure to lock the row before processing the command
 	if aggregate.GetID() != "" {
