@@ -31,7 +31,7 @@ type Event struct {
 	Type                 string      `json:"type"`
 	Data                 interface{} `json:"data"`
 	Metadata             Metadata    `json:"metadata"`
-	NonPersistedMetadata Metadata    `json:"-" gorm:"-"`
+	NonPersistedMetadata interface{} `json:"-" gorm:"-"`
 }
 
 func (event Event) Apply(aggregate Aggregate) {
