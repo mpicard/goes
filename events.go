@@ -89,7 +89,7 @@ func Events() ([]Event, error) {
 	return ret, nil
 }
 
-// RegisterEvents should be used a the beginning of your application to register all
+// Register should be used a the beginning of your application to register all
 // your events types
 func Register(aggregate Aggregate, events ...EventInterface) {
 

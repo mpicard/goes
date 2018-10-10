@@ -9,11 +9,11 @@ import (
 type NilAggregate struct{}
 
 func (NilAggregate) Apply(event Event) Aggregate {
-	panic("trying ti use a NilAggregate")
+	panic("trying to use a NilAggregate")
 }
 
 func (NilAggregate) GetID() string {
-	panic("trying ti use a NilAggregate")
+	panic("trying to use a NilAggregate")
 }
 func (NilAggregate) UpdateVersion() {
 }
