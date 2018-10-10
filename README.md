@@ -170,11 +170,6 @@ func (c UpdateFirstName) BuildEvent() (interface{}, error) {
 `Apply` methods should return a pointer
 `Validate` methods take a pointer as input
 
-## Todo
-
-- [x] First draft that avoid multiple switch
-- [ ] Stop using pointers as an arguments and return values for the `Call` function: use purely immutables aggregates. (for the moment they are actually immutables, but you need to pass a pointer to persist in `gorm`, you can save an interface (which is not a concrete type).
-
 ## Glossary
 
 * **Commands** Commands are responsible for: Validating attributes, Validating that the action can be performed given the current state of the application and Building the event. A `Command` can only return 1 `Event`, but it can be return multiple `Event` types.
