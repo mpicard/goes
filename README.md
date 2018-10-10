@@ -3,6 +3,7 @@
 ### Golang event sourcing made easy 
 [![GoDoc](https://godoc.org/github.com/z0mbie42/goes?status.svg)](https://godoc.org/github.com/z0mbie42/goes)
 [![GitHub release](https://img.shields.io/github/release/z0mbie42/goes.svg)](https://github.com/z0mbie42/goes/releases)
+[![Build Status](https://travis-ci.org/z0mbie42/goes.svg?branch=master)](https://travis-ci.org/z0mbie42/goes)
 
 ## Usage
 
