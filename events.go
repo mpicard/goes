@@ -22,16 +22,16 @@ type EventInterface interface {
 }
 
 type Event struct {
-	ID                   string      `json:"id" gorm:"type:uuid;primary_key"`
-	Timestamp            time.Time   `json:"timestamp"`
-	AggregateID          string      `json:"aggregate_id"`
-	AggregateType        string      `json:"aggregate_type"`
-	Action               string      `json:"action"`
-	Version              uint64      `json:"version"`
-	Type                 string      `json:"type"`
-	Data                 interface{} `json:"data"`
-	Metadata             Metadata    `json:"metadata"`
-	NonPersistedMetadata interface{} `json:"-" gorm:"-"`
+	ID            string      `json:"id" gorm:"type:uuid;primary_key"`
+	Timestamp     time.Time   `json:"timestamp"`
+	AggregateID   string      `json:"aggregate_id"`
+	AggregateType string      `json:"aggregate_type"`
+	Action        string      `json:"action"`
+	Version       uint64      `json:"version"`
+	Type          string      `json:"type"`
+	Data          interface{} `json:"data"`
+	Metadata      Metadata    `json:"metadata"`
+	NonPersisted  interface{} `json:"-" gorm:"-"`
 }
 
 func (event Event) Apply(aggregate Aggregate) {
