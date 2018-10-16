@@ -17,6 +17,11 @@ func MigrateEventsTable() error {
 	return nil
 }
 
+// Init initialize the db package
+func Init(db *gorm.DB) {
+	DB = db
+}
+
 func InitDB(dbConn string, logMode bool) error {
 	var err error
 

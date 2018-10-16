@@ -30,6 +30,9 @@ func Call(command Command, aggregate Aggregate, metadata Metadata) (Event, error
 	return event, nil
 }
 
+// CallTx apply the given command to the given aggregate.
+// aggregate is a pointer
+// if no error happen it returns the created event, and mutate the given aggregate
 func CallTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
 	var err error
 
