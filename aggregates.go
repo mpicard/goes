@@ -29,7 +29,7 @@ type Aggregate interface {
 
 // BaseAggregate should be embedded in all your aggregates
 type BaseAggregate struct {
-	ID        string     `json:"id"`
+	ID        string     `json:"id" gorm:"type:uuid;primary_key"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at"`
