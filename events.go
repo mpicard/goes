@@ -43,7 +43,7 @@ func (event Event) Apply(aggregate Aggregate) {
 type EventDB struct {
 	ID            string    `json:"id" gorm:"type:uuid;primary_key"`
 	Timestamp     time.Time `json:"timestamp"`
-	AggregateID   string    `json:"aggregate_id"`
+	AggregateID   string    `json:"aggregate_id" gorm:"type:uuid"`
 	AggregateType string    `json:"aggregate_type"`
 	Action        string    `json:"action"`
 	Version       uint64    `json:"version"`
