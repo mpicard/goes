@@ -4,23 +4,6 @@ import (
 	"time"
 )
 
-// NilAggregate is used by the `Call` function to return a kind of nil value and not
-// propagate errors
-type NilAggregate struct{}
-
-func (NilAggregate) Apply(event Event) Aggregate {
-	panic("trying to use a NilAggregate")
-}
-
-func (NilAggregate) GetID() string {
-	panic("trying to use a NilAggregate")
-}
-func (NilAggregate) UpdateVersion() {
-}
-
-func (NilAggregate) UpdateUpdatedAt(time.Time) {
-}
-
 type Aggregate interface {
 	GetID() string
 	UpdateVersion()
