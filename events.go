@@ -179,6 +179,6 @@ func (event EventDB) Decode() (Event, error) {
 }
 
 // TableName is used by gorm to create the table
-func (EventDB) TableName() string {
-	return "events"
+func (ev EventDB) TableName() string {
+	return ev.AggregateType + "_events"
 }
