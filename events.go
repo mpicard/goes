@@ -53,7 +53,7 @@ type EventDB struct {
 	RawMetadata postgres.Jsonb `json:"-" gorm:"type:jsonb;column:metadata"`
 }
 
-func buildBaseEvent(evi EventInterface, metadata Metadata, aggregateID string) Event {
+func buildBaseEvent(evi EventInterface, metadata Metadata, nonPersisted interface{}, aggregateID string) Event {
 	event := Event{}
 	uuidV4, _ := uuid.NewRandom()
 
@@ -68,6 +68,7 @@ func buildBaseEvent(evi EventInterface, metadata Metadata, aggregateID string) E
 	event.Action = evi.Action()
 	event.Type = evi.AggregateType() + "." + evi.Action()
 	event.Metadata = metadata
+	event.NonPersisted = nonPersisted
 	event.Version = evi.Version()
 
 	return event

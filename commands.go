@@ -8,7 +8,7 @@ import (
 )
 
 type Command interface {
-	BuildEvent() (interface{}, error)
+	BuildEvent() (interface{}, interface{}, error)
 	Validate(interface{}) error
 }
 
@@ -56,12 +56,12 @@ func CallTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata
 		return Event{}, err
 	}
 
-	data, err := command.BuildEvent()
+	data, nonPersisted, err := command.BuildEvent()
 	if err != nil {
 		return Event{}, err
 	}
 
-	event := buildBaseEvent(data.(EventInterface), metadata, aggregate.GetID())
+	event := buildBaseEvent(data.(EventInterface), metadata, nonPersisted, aggregate.GetID())
 	event.Data = data
 	event.Apply(aggregate)
 	// in Case of Create event
