@@ -30,19 +30,3 @@ func (agg *BaseAggregate) UpdateVersion() {
 func (agg *BaseAggregate) UpdateUpdatedAt(t time.Time) {
 	agg.UpdatedAt = t
 }
-
-// Events returns all the persisted events associated with the aggregate
-func (a BaseAggregate) Events() ([]Event, error) {
-	events := []EventDB{}
-	ret := []Event{}
-
-	DB.Where("aggregate_id = ?", a.ID).Order("timestamp").Find(&events)
-	for _, event := range events {
-		ev, err := event.Decode()
-		if err != nil {
-			return []Event{}, err
-		}
-		ret = append(ret, ev)
-	}
-	return ret, nil
-}

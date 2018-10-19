@@ -74,22 +74,6 @@ func buildBaseEvent(evi EventInterface, metadata Metadata, nonPersisted interfac
 	return event
 }
 
-// Events returns **All** the persisted events
-func Events() ([]Event, error) {
-	events := []EventDB{}
-	ret := []Event{}
-
-	DB.Order("timestamp").Find(&events)
-	for _, event := range events {
-		ev, err := event.Decode()
-		if err != nil {
-			return []Event{}, err
-		}
-		ret = append(ret, ev)
-	}
-	return ret, nil
-}
-
 // Register should be used at the beginning of your application to register all
 // your events types for a given aggregate
 func Register(aggregate Aggregate, events ...EventInterface) {
