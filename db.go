@@ -18,8 +18,9 @@ func MigrateEventsTable() error {
 }
 
 // Init initialize the db package
-func Init(db *gorm.DB) {
+func Init(db *gorm.DB) error {
 	DB = db
+	return DB.DB().Ping()
 }
 
 func InitDB(dbConn string, logMode bool) error {
@@ -30,7 +31,8 @@ func InitDB(dbConn string, logMode bool) error {
 		return err
 	}
 	DB.LogMode(logMode)
-	return nil
+
+	return DB.DB().Ping()
 }
 
 func IsRecordNotFoundError(err error) bool {
