@@ -125,22 +125,10 @@ func (event EventDB) Decode() (Event, error) {
 		"." + strconv.FormatUint(event.Version, 10)
 	dataPointer := reflect.New(eventRegistry[eventType])
 	dataValue := dataPointer.Elem()
-	var data map[string]interface{}
 
-	err = json.Unmarshal(event.RawData.RawMessage, &data)
+	err = json.Unmarshal(event.RawData.RawMessage, &dataValue)
 	if err != nil {
 		return Event{}, err
-	}
-
-	n := dataValue.NumField()
-	for i := 0; i < n; i++ {
-		field := dataValue.Type().Field(i)
-		jsonName := field.Tag.Get("json")
-		if jsonName == "" {
-			jsonName = field.Name
-		}
-		val := dataValue.FieldByName(field.Name)
-		val.Set(reflect.ValueOf(data[jsonName]))
 	}
 
 	ret.ID = event.ID
@@ -151,8 +139,7 @@ func (event EventDB) Decode() (Event, error) {
 	ret.Type = event.Type
 	ret.Version = event.Version
 
-	dataInterface := dataValue.Interface()
-	ret.Data = dataInterface
+	ret.Data = dataValue.Interface()
 
 	err = json.Unmarshal(event.RawMetadata.RawMessage, &ret.Metadata)
 	if err != nil {
