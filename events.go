@@ -126,7 +126,7 @@ func (event EventDB) Decode() (Event, error) {
 	dataPointer := reflect.New(eventRegistry[eventType])
 	dataValue := dataPointer.Elem()
 
-	err = json.Unmarshal(event.RawData.RawMessage, &dataValue)
+	err = json.Unmarshal(event.RawData.RawMessage, dataPointer)
 	if err != nil {
 		return Event{}, err
 	}
@@ -138,7 +138,6 @@ func (event EventDB) Decode() (Event, error) {
 	ret.Action = event.Action
 	ret.Type = event.Type
 	ret.Version = event.Version
-
 	ret.Data = dataValue.Interface()
 
 	err = json.Unmarshal(event.RawMetadata.RawMessage, &ret.Metadata)
