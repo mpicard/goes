@@ -139,7 +139,6 @@ func (event EventDB) Decode() (Event, error) {
 	ret.Action = event.Action
 	ret.Type = event.Type
 	ret.Version = event.Version
-
 	ret.Data = iface
 
 	err = json.Unmarshal(event.RawMetadata.RawMessage, &ret.Metadata)
