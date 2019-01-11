@@ -1,9 +1,23 @@
-# GO ES
+<p align="center">
+  <h3 align="center">GO ES</h3>
+  <p align="center">Go event sourcing made easy</p>
+</p>
 
-### Golang event sourcing made easy
+--------
+
 [![GoDoc](https://godoc.org/github.com/bloom42/goes?status.svg)](https://godoc.org/github.com/bloom42/goes)
 [![GitHub release](https://img.shields.io/github/release/bloom42/goes.svg)](https://github.com/bloom42/goes/releases)
 [![Build Status](https://travis-ci.org/bloom42/goes.svg?branch=master)](https://travis-ci.org/bloom42/goes)
+
+
+1. [Usage](#usage)
+2. [Notes](#notes)
+3. [Glossary](#glossary)
+4. [Resources](#resources)
+5. [License](#license)
+
+-------------------
+
 
 ## Usage
 
