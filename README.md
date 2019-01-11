@@ -1,9 +1,9 @@
 # GO ES
 
 ### Golang event sourcing made easy
-[![GoDoc](https://godoc.org/github.com/z0mbie42/goes?status.svg)](https://godoc.org/github.com/z0mbie42/goes)
-[![GitHub release](https://img.shields.io/github/release/z0mbie42/goes.svg)](https://github.com/z0mbie42/goes/releases)
-[![Build Status](https://travis-ci.org/z0mbie42/goes.svg?branch=master)](https://travis-ci.org/z0mbie42/goes)
+[![GoDoc](https://godoc.org/github.com/bloom42/goes?status.svg)](https://godoc.org/github.com/bloom42/goes)
+[![GitHub release](https://img.shields.io/github/release/bloom42/goes.svg)](https://github.com/bloom42/goes/releases)
+[![Build Status](https://travis-ci.org/bloom42/goes.svg?branch=master)](https://travis-ci.org/bloom42/goes)
 
 ## Usage
 
