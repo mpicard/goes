@@ -6,7 +6,12 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// AsyncReactor are reactors which don't care about the event's insertion transaction, they
+// are executed asynchronously (in they own goroutine)
 type AsyncReactor = func(Event) error
+
+// SyncReactor are reactors are execute in the same transaction than the event's one and thus can
+// fail it in case of error.
 type SyncReactor = func(*gorm.DB, Event) error
 
 var reactorRegistry = map[string]registryReactors{}
@@ -16,7 +21,7 @@ type registryReactors struct {
 	Async []AsyncReactor
 }
 
-// On is used to register events
+// On is used to register `SyncReactor` and `AsyncReactor` to react to `Event`s here
 func On(event EventInterface, sync []SyncReactor, async []AsyncReactor) {
 	eventType := event.AggregateType() +
 		"." + event.Action() +
@@ -46,7 +51,7 @@ func On(event EventInterface, sync []SyncReactor, async []AsyncReactor) {
 	reactorRegistry[eventType] = registryReactors{Sync: newSync, Async: newAsync}
 }
 
-func Dispatch(tx *gorm.DB, event Event) error {
+func dispatch(tx *gorm.DB, event Event) error {
 	data := event.Data.(EventInterface)
 	eventType := data.AggregateType() +
 		"." + data.Action() +
