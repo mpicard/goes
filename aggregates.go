@@ -6,8 +6,8 @@ import (
 
 type Aggregate interface {
 	GetID() string
-	UpdateVersion()
-	UpdateUpdatedAt(time.Time)
+	incrementVersion()
+	updateUpdatedAt(time.Time)
 }
 
 // BaseAggregate should be embedded in all your aggregates
@@ -23,10 +23,10 @@ func (a BaseAggregate) GetID() string {
 	return a.ID
 }
 
-func (agg *BaseAggregate) UpdateVersion() {
+func (agg *BaseAggregate) incrementVersion() {
 	agg.Version += 1
 }
 
-func (agg *BaseAggregate) UpdateUpdatedAt(t time.Time) {
+func (agg *BaseAggregate) updateUpdatedAt(t time.Time) {
 	agg.UpdatedAt = t
 }

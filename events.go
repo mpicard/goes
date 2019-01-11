@@ -35,10 +35,11 @@ type Event struct {
 	NonPersisted  interface{} `json:"-"`
 }
 
+// Apply apply the event's data `Apply` method to the aggregate and then update aggregate's version
 func (event Event) Apply(aggregate Aggregate) {
 	event.Data.(EventInterface).Apply(aggregate, event)
-	aggregate.UpdateVersion()
-	aggregate.UpdateUpdatedAt(event.Timestamp)
+	aggregate.incrementVersion()
+	aggregate.updateUpdatedAt(event.Timestamp)
 }
 
 // StoreEvent is a struct ready to be serialized / deserialized to interface with the event store
