@@ -42,7 +42,7 @@ func (event Event) Apply(aggregate Aggregate) {
 	aggregate.updateUpdatedAt(event.Timestamp)
 }
 
-// StoreEvent is a struct ready to be serialized / deserialized to interface with the event store
+// StoreEvent is a struct ready to be serialized / deserialized to and from the event store
 type StoreEvent struct {
 	ID            string    `json:"id" gorm:"type:uuid;primary_key"`
 	Timestamp     time.Time `json:"timestamp"`
