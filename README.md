@@ -7,21 +7,10 @@
 
 ## Usage
 
-**See `_examples/api` for a full event source GraphQL API example**
+* See `examples/api` for an event sourced GraphQL API example
+* See `examples/user` for a simple example
 
-**See `_examples/user` for a simple example**
-
-```bash
-$ docker run -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres
-$ export DATABASE="postgres://postgres:mysecretpassword@localhost/?sslmode=disable"
-$ psql $DATABASE -c "CREATE DATABASE goes"
-$ export DATABASE="postgres://postgres:mysecretpassword@localhost/goes?sslmode=disable"
-$ cd _examples/user
-$ go get -u
-$ go run main.go
-```
-
-At the beggning there was the noun.
+At the beggning there was the **noun**.
 
 So we start by declaring an `Aggregate` (a kind of read model).
 
@@ -58,12 +47,12 @@ func (a *Addresses) Scan(src interface{}) error {
 ```
 
 Then we should describe which kinds of actions (`Event`s) can happen to our `Aggregate`
-and **What** this `Events` **Change** to our `Aggregates`.
+and **What** this `Events` **Change** to our `Aggregates`. Please welcome **verbs**.
 
 The `Apply` mtehtods are our **Calculators**.
 
 ```go
-// Events
+// first event
 type CreatedV1 struct {
 	ID        string `json:"id"`
 	FirstName string `json:"first_name"`
@@ -90,6 +79,7 @@ func (CreatedV1) Version() uint64 {
 	return 1
 }
 
+// second event
 type FirstNameUpdatedV1 struct {
 	FirstName string `json:"first_name"`
 }
@@ -110,7 +100,6 @@ func (FirstNameUpdatedV1) Action() string {
 func (FirstNameUpdatedV1) Version() uint64 {
 	return 1
 }
-
 ```
 
 And finally, we should describe **How** we can perform these acions (`Event`s): this is our
@@ -136,17 +125,17 @@ type Create struct {
 }
 
 func (c Create) Validate(agg interface{}) error {
-	user := *agg.(*User)
-	_ = user
+	// user := *agg.(*User)
+	// _ = user
 	return validateFirstName(c.FirstName)
 }
 
-func (c Create) BuildEvent() (interface{}, error) {
+func (c Create) BuildEvent() (interface{}, interface{}, error) {
 	return CreatedV1{
 		ID:        "MyNotSoRandomUUID",
 		FirstName: c.FirstName,
 		LastName:  c.LastName,
-	}, nil
+	}, nil, nil
 }
 
 type UpdateFirstName struct {
@@ -159,10 +148,10 @@ func (c UpdateFirstName) Validate(agg interface{}) error {
 	return validateFirstName(c.FirstName)
 }
 
-func (c UpdateFirstName) BuildEvent() (interface{}, error) {
+func (c UpdateFirstName) BuildEvent() (interface{}, interface{}, error) {
 	return FirstNameUpdatedV1{
 		FirstName: c.FirstName,
-	}, nil
+	}, nil, nil
 }
 ```
 
@@ -176,7 +165,8 @@ func (c UpdateFirstName) BuildEvent() (interface{}, error) {
 
 * **Commands** Commands are responsible for: Validating attributes, Validating that the action can
 be performed given the current state of the application and Building the event.
-A `Command` can only return 1 `Event`.
+A `Command` returns 1 `Event` + optionnaly 1 non persisted event. The non persisted event
+can be used to send non hashed tokens to a `SendEmail` reactor for example.
 
 * **Events** are the source of truth. They are applied to `Aggregates`
 
@@ -184,7 +174,7 @@ A `Command` can only return 1 `Event`.
 
 * **Calculators** to update the state of the application. This is the `Apply` method of the `Aggregate` interface.
 
-* **Reactors** to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Call` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Call` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
+* **Reactors** to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Execute` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Execute` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
 
 * **Event Store** PostgresSQL
 
@@ -195,7 +185,7 @@ This implementation is sort of the Go implementation of the following event sour
 
 * https://kickstarter.engineering/event-sourcing-made-simple-4a2625113224
 Because of the Go type system, i wasn't able (you can help ?) to use purely immutable aggregates:
-You need to pass a pointer to the `Call` function. The underlying data is not modified, but is kind of dirty.
+You need to pass a pointer to the `Execute` function. The underlying data is not modified, but is kind of dirty.
 
 * https://github.com/mishudark/eventhus
 

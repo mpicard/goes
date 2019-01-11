@@ -18,6 +18,7 @@ type EventInterface interface {
 	AggregateType() string
 	Action() string
 	Version() uint64
+	// Apply the event to the Aggregate
 	Apply(Aggregate, Event)
 }
 
@@ -40,6 +41,7 @@ func (event Event) Apply(aggregate Aggregate) {
 	aggregate.UpdateUpdatedAt(event.Timestamp)
 }
 
+// StoreEvent is a struct ready to be serialized / deserialized to interface with the event store
 type StoreEvent struct {
 	ID            string    `json:"id" gorm:"type:uuid;primary_key"`
 	Timestamp     time.Time `json:"timestamp"`
@@ -87,7 +89,7 @@ func Register(aggregate Aggregate, events ...EventInterface) {
 	}
 }
 
-// Encode returns a resiralized version of the event, ready to go to the Database
+// Encode returns a resiralized version of the event, ready to go to the eventstore
 func (event Event) Encode() (StoreEvent, error) {
 	ret := StoreEvent{}
 	var err error

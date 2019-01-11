@@ -7,15 +7,17 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Command s are executed onagregates and generate events
 type Command interface {
 	BuildEvent() (interface{}, interface{}, error)
 	Validate(interface{}) error
 }
 
-func Call(command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
+// Execute a command to an aggregate
+func Execute(command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
 	tx := DB.Begin()
 
-	event, err := CallTx(tx, command, aggregate, metadata)
+	event, err := ExecuteTx(tx, command, aggregate, metadata)
 	if err != nil {
 		tx.Rollback()
 		return Event{}, err
@@ -30,10 +32,10 @@ func Call(command Command, aggregate Aggregate, metadata Metadata) (Event, error
 	return event, nil
 }
 
-// CallTx apply the given command to the given aggregate.
+// ExecuteTx execute the given command to the given aggregate.
 // aggregate is a pointer
 // if no error happen it returns the created event, and mutate the given aggregate
-func CallTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
+func ExecuteTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
 	var err error
 
 	// verify that the aggregate is a pointer
