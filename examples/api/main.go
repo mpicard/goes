@@ -10,9 +10,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/handler"
-	"github.com/z0mbie42/goes"
-	"github.com/z0mbie42/goes/_examples/api/domain"
-	"github.com/z0mbie42/goes/_examples/api/graph"
+	"github.com/bloom42/goes"
+	"github.com/bloom42/goes/examples/api/domain"
+	"github.com/bloom42/goes/examples/api/graph"
 )
 
 func init() {

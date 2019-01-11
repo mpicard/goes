@@ -8,8 +8,8 @@ import (
 	"log"
 
 	"github.com/jinzhu/gorm"
-	"github.com/z0mbie42/goes"
-	"github.com/z0mbie42/goes/_examples/api/domain"
+	"github.com/bloom42/goes"
+	"github.com/bloom42/goes/_examples/api/domain"
 )
 
 type Api struct{}

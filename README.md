@@ -1,6 +1,6 @@
 # GO ES
 
-### Golang event sourcing made easy 
+### Golang event sourcing made easy
 [![GoDoc](https://godoc.org/github.com/z0mbie42/goes?status.svg)](https://godoc.org/github.com/z0mbie42/goes)
 [![GitHub release](https://img.shields.io/github/release/z0mbie42/goes.svg)](https://github.com/z0mbie42/goes/releases)
 [![Build Status](https://travis-ci.org/z0mbie42/goes.svg?branch=master)](https://travis-ci.org/z0mbie42/goes)
@@ -26,6 +26,16 @@ At the beggning there was the noun.
 So we start by declaring an `Aggregate` (a kind of read model).
 
 ```go
+// Our Aggregate
+type User struct {
+	goes.BaseAggregate
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	Addresses Addresses `json:"addresses" gorm:"type:jsonb;column:addresses"`
+}
+
+
+// a subfield used as a JSONB column
 type Address struct {
 	Country string `json:"country"`
 	Region  string `json:"region"`
@@ -44,14 +54,6 @@ func (a *Addresses) Scan(src interface{}) error {
 
 	}
 	return errors.New(fmt.Sprint("Failed to unmarshal JSON from DB", src))
-}
-
-// Our root Aggregate
-type User struct {
-	goes.BaseAggregate
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	Addresses Addresses `json:"addresses" gorm:"type:jsonb;column:addresses"`
 }
 ```
 
@@ -112,8 +114,8 @@ func (FirstNameUpdatedV1) Version() uint64 {
 ```
 
 And finally, we should describe **How** we can perform these acions (`Event`s): this is our
-`Command`s. The validate the fact that we can mutate our update our aggregate and
-build the event.
+`Command`s. They are responsible to validate the command against our current state and build the
+event.
 
 ```go
 func validateFirstName(firstName string) error {
@@ -172,13 +174,15 @@ func (c UpdateFirstName) BuildEvent() (interface{}, error) {
 
 ## Glossary
 
-* **Commands** Commands are responsible for: Validating attributes, Validating that the action can be performed given the current state of the application and Building the event. A `Command` can only return 1 `Event`, but it can be return multiple `Event` types.
+* **Commands** Commands are responsible for: Validating attributes, Validating that the action can
+be performed given the current state of the application and Building the event.
+A `Command` can only return 1 `Event`.
 
 * **Events** are the source of truth. They are applied to `Aggregates`
 
 * **Aggregates** represent the current state of the application. They are like models.
 
-* **Calculators** to update the state of the application. This is the `Apply` method of the `Aggregate` interface. 
+* **Calculators** to update the state of the application. This is the `Apply` method of the `Aggregate` interface.
 
 * **Reactors** to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Call` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Call` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
 
@@ -195,3 +199,7 @@ You need to pass a pointer to the `Call` function. The underlying data is not mo
 
 * https://github.com/mishudark/eventhus
 
+
+## License
+
+See `LICENSE.txt` and [https://opensource.bloom.sh/licensing](https://opensource.bloom.sh/licensing)

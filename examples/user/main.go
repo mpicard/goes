@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
-	"github.com/z0mbie42/goes"
+	"github.com/bloom42/goes"
 )
 
 type ValidationError struct {

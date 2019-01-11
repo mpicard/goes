@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/bloom42/goes"
 	"github.com/google/uuid"
-	"github.com/z0mbie42/goes"
 )
 
 type User struct {
