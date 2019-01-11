@@ -65,7 +65,7 @@ func ExecuteTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metad
 
 	event := buildBaseEvent(data.(EventInterface), metadata, nonPersisted, aggregate.GetID())
 	event.Data = data
-	event.Apply(aggregate)
+	event.apply(aggregate)
 	// in Case of Create event
 	event.AggregateID = aggregate.GetID()
 
@@ -74,7 +74,7 @@ func ExecuteTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metad
 		return Event{}, err
 	}
 
-	storeEventToSave, err := event.Encode()
+	storeEventToSave, err := event.Serialize()
 	if err != nil {
 		return Event{}, err
 	}

@@ -36,7 +36,7 @@ type Event struct {
 }
 
 // Apply apply the event's data `Apply` method to the aggregate and then update aggregate's version
-func (event Event) Apply(aggregate Aggregate) {
+func (event Event) apply(aggregate Aggregate) {
 	event.Data.(EventInterface).Apply(aggregate, event)
 	aggregate.incrementVersion()
 	aggregate.updateUpdatedAt(event.Timestamp)
@@ -90,8 +90,8 @@ func Register(aggregate Aggregate, events ...EventInterface) {
 	}
 }
 
-// Encode returns a resiralized version of the event, ready to go to the eventstore
-func (event Event) Encode() (StoreEvent, error) {
+// Serialize returns a serialized version of the event, ready to go to the eventstore
+func (event Event) Serialize() (StoreEvent, error) {
 	ret := StoreEvent{}
 	var err error
 
