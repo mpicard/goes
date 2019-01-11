@@ -133,7 +133,7 @@ func validateFirstName(firstName string) error {
 	return nil
 }
 
-// Commands
+// first command: Create
 type Create struct {
 	FirstName string
 	LastName  string
@@ -153,13 +153,14 @@ func (c Create) BuildEvent() (interface{}, interface{}, error) {
 	}, nil, nil
 }
 
+// second command: UpdateFirstName
 type UpdateFirstName struct {
 	FirstName string
 }
 
 func (c UpdateFirstName) Validate(agg interface{}) error {
-	user := agg.(*User)
-	_ = user
+	// user := agg.(*User)
+	// _ = user
 	return validateFirstName(c.FirstName)
 }
 
@@ -168,7 +169,6 @@ func (c UpdateFirstName) BuildEvent() (interface{}, interface{}, error) {
 		FirstName: c.FirstName,
 	}, nil, nil
 }
-
 
 
 func main() {
