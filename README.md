@@ -32,8 +32,8 @@ So we start by declaring an `Aggregate` (a kind of read model).
 // Our Aggregate
 type User struct {
 	goes.BaseAggregate
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
+	FirstName string
+	LastName  string
 	Addresses Addresses `json:"addresses" gorm:"type:jsonb;column:addresses"`
 }
 
@@ -67,6 +67,7 @@ The `Apply` mtehtods are our **Calculators**.
 
 ```go
 // first event
+// json tags should be set because the struct will be serialized as JSON when saved in the eventstore
 type CreatedV1 struct {
 	ID        string `json:"id"`
 	FirstName string `json:"first_name"`
@@ -166,6 +167,30 @@ func (c UpdateFirstName) BuildEvent() (interface{}, interface{}, error) {
 	return FirstNameUpdatedV1{
 		FirstName: c.FirstName,
 	}, nil, nil
+}
+
+
+
+func main() {
+	var user User
+	command := Create{
+		FirstName: "Sylvain",
+		LastName: "Kerkour",
+	}
+	metadata := goes.Metdata{
+		"request_id": "my request id",
+	}
+
+	_, err := goes.Execute(&user, command, metadata) // no metadata
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(user)
+	// User {
+	// 	ID: "MyNotSoRandomUUID",
+	// 	FirstName: "Sylvain",
+	// 	LastName: "Kerkour",
+	// }
 }
 ```
 
