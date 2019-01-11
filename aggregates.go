@@ -19,8 +19,8 @@ type BaseAggregate struct {
 	Version   uint64     `json:"version"`
 }
 
-func (a BaseAggregate) GetID() string {
-	return a.ID
+func (agg BaseAggregate) GetID() string {
+	return agg.ID
 }
 
 func (agg *BaseAggregate) incrementVersion() {
