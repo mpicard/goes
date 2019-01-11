@@ -10,7 +10,7 @@ import (
 // are executed asynchronously (in they own goroutine)
 type AsyncReactor = func(Event) error
 
-// SyncReactor are reactors are execute in the same transaction than the event's one and thus can
+// SyncReactor are reactors that execute in the same transaction than the event's one and thus can
 // fail it in case of error.
 type SyncReactor = func(*gorm.DB, Event) error
 
