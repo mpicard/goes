@@ -116,8 +116,8 @@ func (event Event) Serialize() (StoreEvent, error) {
 	return ret, nil
 }
 
-// Decode return a deserialized event, ready to user
-func (event StoreEvent) Decode() (Event, error) {
+// Deserialize return a deserialized event, ready to user
+func (event StoreEvent) Deserialize() (Event, error) {
 	// deserialize json
 	var err error
 	ret := Event{}
