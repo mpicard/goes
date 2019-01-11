@@ -152,7 +152,7 @@ func (event StoreEvent) Deserialize() (Event, error) {
 	return ret, nil
 }
 
-// TableName is used by gorm to create the table
-func (ev StoreEvent) TableName() string {
-	return ev.AggregateType + "s_events"
+// TableName is used by gorm to insert and retrieve events
+func (event StoreEvent) TableName() string {
+	return event.AggregateType + "s_events"
 }

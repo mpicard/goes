@@ -34,7 +34,7 @@ type User struct {
 	goes.BaseAggregate
 	FirstName string
 	LastName  string
-	Addresses Addresses `json:"addresses" gorm:"type:jsonb;column:addresses"`
+	Addresses Addresses `gorm:"type:jsonb;column:addresses"`
 }
 
 
