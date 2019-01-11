@@ -72,12 +72,12 @@ func CallTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metadata
 		return Event{}, err
 	}
 
-	eventDBToSave, err := event.Encode()
+	storeEventToSave, err := event.Encode()
 	if err != nil {
 		return Event{}, err
 	}
 
-	err = tx.Create(&eventDBToSave).Error
+	err = tx.Create(&storeEventToSave).Error
 	if err != nil {
 		return Event{}, err
 	}

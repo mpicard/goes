@@ -40,7 +40,7 @@ func (event Event) Apply(aggregate Aggregate) {
 	aggregate.UpdateUpdatedAt(event.Timestamp)
 }
 
-type EventDB struct {
+type StoreEvent struct {
 	ID            string    `json:"id" gorm:"type:uuid;primary_key"`
 	Timestamp     time.Time `json:"timestamp"`
 	AggregateID   string    `json:"aggregate_id" gorm:"type:uuid"`
@@ -88,8 +88,8 @@ func Register(aggregate Aggregate, events ...EventInterface) {
 }
 
 // Encode returns a resiralized version of the event, ready to go to the Database
-func (event Event) Encode() (EventDB, error) {
-	ret := EventDB{}
+func (event Event) Encode() (StoreEvent, error) {
+	ret := StoreEvent{}
 	var err error
 
 	ret.ID = event.ID
@@ -102,19 +102,19 @@ func (event Event) Encode() (EventDB, error) {
 
 	ret.RawMetadata.RawMessage, err = json.Marshal(event.Metadata)
 	if err != nil {
-		return EventDB{}, err
+		return StoreEvent{}, err
 	}
 
 	ret.RawData.RawMessage, err = json.Marshal(event.Data)
 	if err != nil {
-		return EventDB{}, err
+		return StoreEvent{}, err
 	}
 
 	return ret, nil
 }
 
 // Decode return a deserialized event, ready to user
-func (event EventDB) Decode() (Event, error) {
+func (event StoreEvent) Decode() (Event, error) {
 	// deserialize json
 	var err error
 	ret := Event{}
@@ -150,6 +150,6 @@ func (event EventDB) Decode() (Event, error) {
 }
 
 // TableName is used by gorm to create the table
-func (ev EventDB) TableName() string {
+func (ev StoreEvent) TableName() string {
 	return ev.AggregateType + "s_events"
 }

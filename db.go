@@ -10,8 +10,8 @@ var DB *gorm.DB
 func MigrateEventsTable() error {
 	var err error
 
-	DB.DropTable(&EventDB{})
-	if err = DB.AutoMigrate(&EventDB{}).Error; err != nil {
+	DB.DropTable(&StoreEvent{})
+	if err = DB.AutoMigrate(&StoreEvent{}).Error; err != nil {
 		return err
 	}
 	return nil
