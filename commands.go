@@ -9,7 +9,7 @@ import (
 
 // Command s are executed on agregates and generate events
 type Command interface {
-	BuildEvent(tx *gorm.DB) (event interface{}, nonPersisted interface{}, err error)
+	BuildEvent() (event interface{}, nonPersisted interface{}, err error)
 	Validate(tx *gorm.DB, aggregate interface{}) error
 }
 
@@ -58,7 +58,7 @@ func ExecuteTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metad
 		return Event{}, err
 	}
 
-	data, nonPersisted, err := command.BuildEvent(tx)
+	data, nonPersisted, err := command.BuildEvent()
 	if err != nil {
 		return Event{}, err
 	}
