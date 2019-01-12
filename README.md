@@ -20,7 +20,7 @@
 
 ## Glossary
 
-* **Commands** Commands are responsible for: Validating attributes, Validating that the action can
+* **Commands** Commands are responsible for: validating data, validating that the action can
 be performed given the current state of the application and Building the event.
 A `Command` returns 1 `Event` + optionnaly 1 non persisted event. The non persisted event
 can be used to send non hashed tokens to a `SendEmail` reactor for example.
