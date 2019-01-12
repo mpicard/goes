@@ -223,10 +223,8 @@ can be used to send non hashed tokens to a `SendEmail` reactor for example.
 This implementation is sort of the Go implementation of the following event sourcing framework
 
 * https://kickstarter.engineering/event-sourcing-made-simple-4a2625113224
-Because of the Go type system, i wasn't able (you can help ?) to use purely immutable aggregates:
-You need to pass a pointer to the `Execute` function. The underlying data is not modified, but is kind of dirty.
-
 * https://github.com/mishudark/eventhus
+* https://github.com/looplab/eventhorizon
 
 
 ## License
