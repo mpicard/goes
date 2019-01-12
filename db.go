@@ -2,9 +2,9 @@ package goes
 
 import (
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+// DB should be the only one way to access the DB in your application
 var DB *gorm.DB
 
 // Init initialize the db package
