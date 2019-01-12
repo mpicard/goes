@@ -10,6 +10,8 @@ import (
 	"github.com/jinzhu/gorm/dialects/postgres"
 )
 
+// eventRegistry is used to deserialize event from event store (in case of replay or querying) thanks
+// to reflexion
 var eventRegistry = map[string]reflect.Type{}
 
 type Metadata = map[string]interface{}
