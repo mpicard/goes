@@ -49,7 +49,7 @@ You can find the full example in the `examples/user` directory.
 
 At the beggning there was the **noun**.
 
-So we start by declaring an `Aggregate` (a kind of read model).
+So we start by declaring an `Aggregate` (a read model).
 
 ```go
 package main
