@@ -14,19 +14,73 @@ type AsyncReactor = func(Event) error
 // fail it in case of error.
 type SyncReactor = func(*gorm.DB, Event) error
 
-var reactorRegistry = map[string]registryReactors{}
+// EventMatcher is a func that can match event to a criteria.
+type EventMatcher func(Event) bool
 
-type registryReactors struct {
-	Sync  []SyncReactor
-	Async []AsyncReactor
+// eventBusSubscription is a subscription in the eventbus
+type eventBusSubscription struct {
+	matcher EventMatcher
+	sync    []SyncReactor
+	async   []AsyncReactor
+}
+
+// eventBus is a global in-memory bus within each event flow before getting saved in event store
+var eventBus = []eventBusSubscription{}
+
+// MatchEvent matches a specific event type, nil events never match.
+func MatchEvent(t EventInterface) EventMatcher {
+	eventType := t.AggregateType() +
+		"." + t.Action() +
+		"." + strconv.FormatUint(t.Version(), 10)
+	return func(e Event) bool {
+		eType := e.AggregateType +
+			"." + e.Action +
+			"." + strconv.FormatUint(e.Version, 10)
+		return eventType == eType
+	}
+}
+
+// MatchAny matches any event
+func MatchAny() EventMatcher {
+	return func(event Event) bool {
+		return true
+	}
+}
+
+// MatchAggregate matches a specific aggregate type, nil events never match
+func MatchAggregate(t Aggregate) EventMatcher {
+	return func(event Event) bool {
+		data := event.Data.(EventInterface)
+		return data.AggregateType() == t.Type()
+	}
+}
+
+// MatchAnyOf matches if any of several matchers matches
+func MatchAnyOf(matchers ...EventMatcher) EventMatcher {
+	return func(e Event) bool {
+		for _, m := range matchers {
+			if m(e) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+// MatchAnyEventOf matches if any of several matchers matches
+func MatchAnyEventOf(events ...EventInterface) EventMatcher {
+	return func(e Event) bool {
+		for _, t := range events {
+			if MatchEvent(t)(e) {
+				return true
+			}
+		}
+		return false
+	}
 }
 
 // On is used to register `SyncReactor` and `AsyncReactor` to react to `Event`s
-func On(event EventInterface, sync []SyncReactor, async []AsyncReactor) {
-	eventType := event.AggregateType() +
-		"." + event.Action() +
-		"." + strconv.FormatUint(event.Version(), 10)
-
+func On(matcher EventMatcher, sync []SyncReactor, async []AsyncReactor) {
 	if sync == nil {
 		sync = []SyncReactor{}
 	}
@@ -34,40 +88,27 @@ func On(event EventInterface, sync []SyncReactor, async []AsyncReactor) {
 		async = []AsyncReactor{}
 	}
 
-	var newSync []SyncReactor
-	var newAsync []AsyncReactor
-
-	if reactors, ok := reactorRegistry[eventType]; ok == true {
-		newSync = reactors.Sync
-		newAsync = reactors.Async
-	} else {
-		newSync = []SyncReactor{}
-		newAsync = []AsyncReactor{}
+	subscription := eventBusSubscription{
+		matcher: matcher,
+		sync:    sync,
+		async:   async,
 	}
 
-	newSync = append(newSync, sync...)
-	newAsync = append(newAsync, async...)
-
-	reactorRegistry[eventType] = registryReactors{Sync: newSync, Async: newAsync}
+	eventBus = append(eventBus, subscription)
 }
 
 func dispatch(tx *gorm.DB, event Event) error {
-	data := event.Data.(EventInterface)
-	eventType := data.AggregateType() +
-		"." + data.Action() +
-		"." + strconv.FormatUint(data.Version(), 10)
-
-	if reactors, ok := reactorRegistry[eventType]; ok == true {
+	for _, subscription := range eventBus {
 		// dispatch sync reactor synchronously
 		// it can be something like a projection
-		for _, syncReactor := range reactors.Sync {
+		for _, syncReactor := range subscription.sync {
 			if err := syncReactor(tx, event); err != nil {
 				return err
 			}
 		}
 
 		// dispatch async reactors asynchronously
-		for _, asyncReactor := range reactors.Async {
+		for _, asyncReactor := range subscription.async {
 			go asyncReactor(event)
 		}
 	}
