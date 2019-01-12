@@ -50,7 +50,6 @@ You can find the full example in the `examples/user` directory.
 At the beggning there was the **noun**.
 
 So we start by declaring an `Aggregate` (a read model).
-
 ```go
 package main
 
@@ -107,10 +106,10 @@ func (a *addresses) Scan(src interface{}) error {
 ```
 
 Then we should describe which kinds of actions (`Event`s) can happen to our `Aggregate`
-and **What** this `Events` **Change** to our `Aggregates`. Please welcome **verbs**.
+and **what** this `Events` **change** to our `Aggregates`. Please welcome **verbs**.
+`Event` actions are verb in the past tense.
 
-The `Apply` mtehtods are our **Calculators**.
-
+The `Apply` mtehtods are our **Calculators**. They mutate the `Aggregate` states.
 ```go
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Events definition                                                                              //
@@ -176,10 +175,9 @@ func (FirstNameUpdatedV1) Version() uint64 {
 }
 ```
 
-And finally, we should describe **How** we can perform these acions (`Event`s): this is our
+And finally, we should describe **how** we can perform these acions (`Event`s): this is our
 `Command`s. They are responsible to validate the command against our current state and build the
 event.
-
 ```go
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Commands definition                                                                            //
