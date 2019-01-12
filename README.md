@@ -45,7 +45,7 @@ can be used to send non hashed tokens to a `SendEmail` reactor for example.
 
 ## Usage
 
-You can find the full example in `exmaples/user`
+You can find the full example in the `examples/user` directory.
 
 At the beggning there was the **noun**.
 
