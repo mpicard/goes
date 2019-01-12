@@ -11,6 +11,7 @@ import (
 type Command interface {
 	BuildEvent() (event interface{}, nonPersisted interface{}, err error)
 	Validate(tx *gorm.DB, aggregate interface{}) error
+	AggregateType() string
 }
 
 // Execute a command to an aggregate
@@ -46,6 +47,13 @@ func ExecuteTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metad
 	}
 	if rv.IsNil() {
 		return Event{}, fmt.Errorf("calling command on nil %s", reflect.TypeOf(aggregate))
+	}
+	if command.AggregateType() != aggregate.Type() {
+		return Event{}, fmt.Errorf(
+			"comman's aggregate type (%s) and aggregate type (%s) mismatch",
+			command.AggregateType(),
+			aggregate.Type(),
+		)
 	}
 
 	// if aggregate instance exists, ensure to lock the row before processing the command
