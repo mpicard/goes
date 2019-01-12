@@ -48,9 +48,11 @@ func ExecuteTx(tx *gorm.DB, command Command, aggregate Aggregate, metadata Metad
 	if rv.IsNil() {
 		return Event{}, fmt.Errorf("calling command on nil %s", reflect.TypeOf(aggregate))
 	}
+
+	// check that command.AggregateType and aggregate.Type match
 	if command.AggregateType() != aggregate.Type() {
 		return Event{}, fmt.Errorf(
-			"comman's aggregate type (%s) and aggregate type (%s) mismatch",
+			"command's aggregate type (%s) and aggregate type (%s) mismatch",
 			command.AggregateType(),
 			aggregate.Type(),
 		)
