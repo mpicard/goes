@@ -12,7 +12,7 @@
 `goes` is an opinionated event sourcing / CQRS transactional framework using PostgreSQL as both event
 store and query store.
 It handles all the event dispatching, serialization, deserialization, persistence and command execution
-logics for you.
+logic for you.
 
 
 1. [Glossary](#glossary)
