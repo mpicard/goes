@@ -2,8 +2,6 @@ package goes
 
 import (
 	"strconv"
-
-	"github.com/jinzhu/gorm"
 )
 
 // AsyncReactor are reactors which don't care about the event's insertion transaction, they
@@ -12,7 +10,7 @@ type AsyncReactor = func(Event) error
 
 // SyncReactor are reactors that execute in the same transaction than the event's one and thus can
 // fail it in case of error.
-type SyncReactor = func(*gorm.DB, Event) error
+type SyncReactor = func(Store, Event) error
 
 // EventMatcher is a func that can match event to a criteria.
 type EventMatcher func(Event) bool
@@ -97,7 +95,7 @@ func On(matcher EventMatcher, sync []SyncReactor, async []AsyncReactor) {
 	eventBus = append(eventBus, subscription)
 }
 
-func dispatch(tx *gorm.DB, event Event) error {
+func dispatch(tx Store, event Event) error {
 	for _, subscription := range eventBus {
 		// dispatch sync reactor synchronously
 		// it can be something like a projection

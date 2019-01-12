@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/bloom42/goes"
-	"github.com/jinzhu/gorm"
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +144,7 @@ type Create struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c Create) Validate(tx *gorm.DB, agg interface{}) error {
+func (c Create) Validate(tx *goes.Store, agg interface{}) error {
 	// user := *agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
@@ -171,7 +170,7 @@ type UpdateFirstName struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c UpdateFirstName) Validate(tx *gorm.DB, agg interface{}) error {
+func (c UpdateFirstName) Validate(tx *goes.Store, agg interface{}) error {
 	// user := agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
@@ -189,25 +188,14 @@ func (c UpdateFirstName) AggregateType() string {
 	return "user"
 }
 
-func initDB(dbConn string, logMode bool) error {
-	var err error
-
-	db, err := gorm.Open("postgres", dbConn)
-	if err != nil {
-		return err
-	}
-	db.LogMode(logMode)
-
-	return goes.Init(db)
-}
-
 func main() {
 
 	// configure the database
-	err := initDB(os.Getenv("DATABASE_URL"), true)
+	err := goes.Init(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
+	goes.DB.LogMode(true)
 
 	var user User
 
