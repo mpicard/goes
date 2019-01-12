@@ -7,7 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// Command s are executed on agregates and generate events
+// Command s are executed on aggregates and generate events
 type Command interface {
 	BuildEvent() (event interface{}, nonPersisted interface{}, err error)
 	Validate(tx *gorm.DB, aggregate interface{}) error

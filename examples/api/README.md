@@ -1,3 +1,5 @@
+# Warning: old, to update
+
 This project use [goes](https://github.com/z0mbie42/goes) as event sourcing framework and [gqlgen](https://github.com/vektah/gqlgen) as a typed GraphQL API layer.
 
 ## Getting started

@@ -29,40 +29,7 @@ func init() {
 	goes.RegisterEvents(domain.CreatedV1{}, domain.TextUpdatedV1{})
 }
 
-/*
-TOREMOVE: old middlewares
-type middleware func(next http.HandlerFunc) http.HandlerFunc
-
-func chainMiddleware(mw ...middleware) middleware {
-	return func(final http.HandlerFunc) http.HandlerFunc {
-		return func(w http.ResponseWriter, r *http.Request) {
-			last := final
-			for i := len(mw) - 1; i >= 0; i-- {
-				last = mw[i](last)
-			}
-			last(w, r)
-		}
-	}
-}
-
-func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
-		// To remove... for mocking purpose
-		r.Header.Set("authorization", "secrettoken")
-		authHeader := r.Header.Get("authorization")
-
-		if authHeader == "secrettoken" {
-			ctx = context.WithValue(ctx, "authenticated_user", "z0mbie42")
-		}
-		next.ServeHTTP(w, r.WithContext(ctx))
-	}
-}
-
-*/
-
-func Auth() gin.HandlerFunc {
+func auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 		ctx = context.WithValue(ctx, "authenticated_user", "z0mbie42")
@@ -75,7 +42,7 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.Default()
-	r.Use(Auth())
+	r.Use(auth())
 
 	r.GET("/", gin.WrapH(handler.Playground("Api", "/graphql")))
 
