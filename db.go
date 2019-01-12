@@ -23,3 +23,8 @@ func Init(databaseURL string) error {
 	DB = db
 	return DB.DB().Ping()
 }
+
+// IsRecordNotFoundError returns true if error is or contains a RecordNotFound error
+func IsRecordNotFoundError(err error) bool {
+	return gorm.IsRecordNotFoundError(err)
+}
