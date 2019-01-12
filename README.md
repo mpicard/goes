@@ -39,7 +39,6 @@ can be used to send non hashed tokens to a `SendEmail` reactor for example.
 
 ## Usage
 
-* See `examples/api` for an event sourced GraphQL API example
 * See `examples/user` for a simple example
 
 At the beggning there was the **noun**.
