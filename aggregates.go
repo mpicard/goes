@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Aggregate should be implemented by each aggregate (read model) you define
 type Aggregate interface {
 	GetID() string
 	incrementVersion()
@@ -20,6 +21,7 @@ type BaseAggregate struct {
 	Version   uint64     `json:"version" gorm:"column:version"`
 }
 
+// GetID returns aggregate's ID
 func (agg BaseAggregate) GetID() string {
 	return agg.ID
 }

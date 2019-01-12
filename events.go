@@ -14,8 +14,10 @@ import (
 // to reflexion
 var eventRegistry = map[string]reflect.Type{}
 
+// Metadata is a simple map to store event's metadata
 type Metadata = map[string]interface{}
 
+// EventInterface should be implemented by each custom event (data) you define
 type EventInterface interface {
 	AggregateType() string
 	Action() string
@@ -24,6 +26,7 @@ type EventInterface interface {
 	Apply(Aggregate, Event)
 }
 
+// Event is an in-memory event
 type Event struct {
 	ID            string      `json:"id"`
 	Timestamp     time.Time   `json:"timestamp"`
