@@ -9,14 +9,32 @@
 [![GitHub release](https://img.shields.io/github/release/bloom42/goes.svg)](https://github.com/bloom42/goes/releases)
 [![Build Status](https://travis-ci.org/bloom42/goes.svg?branch=master)](https://travis-ci.org/bloom42/goes)
 
-
-1. [Usage](#usage)
-2. [Notes](#notes)
-3. [Glossary](#glossary)
+1. [Glossary](#glossary)
+2. [Usage](#usage)
+3. [Notes](#notes)
 4. [Resources](#resources)
 5. [License](#license)
 
 -------------------
+
+
+## Glossary
+
+* **Commands** Commands are responsible for: Validating attributes, Validating that the action can
+be performed given the current state of the application and Building the event.
+A `Command` returns 1 `Event` + optionnaly 1 non persisted event. The non persisted event
+can be used to send non hashed tokens to a `SendEmail` reactor for example.
+
+* **Events** are the source of truth. They are applied to `Aggregates`
+
+* **Aggregates** represent the current state of the application. They are like models.
+
+* **Calculators** to update the state of the application. This is the `Apply` method of the `Aggregate` interface.
+
+* **Reactors** to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Execute` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Execute` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
+
+* **Event Store** PostgresSQL
+
 
 
 ## Usage
@@ -199,23 +217,6 @@ func main() {
 
 `Apply` methods should return a pointer
 `Validate` methods take a pointer as input
-
-## Glossary
-
-* **Commands** Commands are responsible for: Validating attributes, Validating that the action can
-be performed given the current state of the application and Building the event.
-A `Command` returns 1 `Event` + optionnaly 1 non persisted event. The non persisted event
-can be used to send non hashed tokens to a `SendEmail` reactor for example.
-
-* **Events** are the source of truth. They are applied to `Aggregates`
-
-* **Aggregates** represent the current state of the application. They are like models.
-
-* **Calculators** to update the state of the application. This is the `Apply` method of the `Aggregate` interface.
-
-* **Reactors** to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Execute` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Execute` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
-
-* **Event Store** PostgresSQL
 
 
 ## Resources
