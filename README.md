@@ -44,41 +44,64 @@ can be used to send non hashed tokens to a `SendEmail` reactor for example.
 
 ## Usage
 
-* See `examples/user` for a simple example
+You can find the full example in `exmaples/user`
 
 At the beggning there was the **noun**.
 
 So we start by declaring an `Aggregate` (a kind of read model).
 
 ```go
-// Our Aggregate
+package main
+
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
+
+	"github.com/bloom42/goes"
+	"github.com/jinzhu/gorm"
+)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Aggregate definition                                                                           //
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// User is our aggregate
 type User struct {
 	goes.BaseAggregate
 	FirstName string
 	LastName  string
-	Addresses Addresses `gorm:"type:jsonb;column:addresses"`
+	Addresses addresses `gorm:"type:jsonb;column:addresses"`
 }
 
+// Type is our aggregate type
+func (user *User) Type() string {
+	return "user"
+}
 
 // a subfield used as a JSONB column
-type Address struct {
+type address struct {
 	Country string `json:"country"`
 	Region  string `json:"region"`
 }
 
-type Addresses []Address
+type addresses []address
 
-func (a Addresses) Value() (driver.Value, error) {
+// Value is used to serialize to SQL
+func (a addresses) Value() (driver.Value, error) {
 	j, err := json.Marshal(a)
 	return j, err
 }
 
-func (a *Addresses) Scan(src interface{}) error {
+// Scan is used to deserialize from SQL
+func (a *addresses) Scan(src interface{}) error {
 	if bytes, ok := src.([]byte); ok {
 		return json.Unmarshal(bytes, a)
 
 	}
-	return errors.New(fmt.Sprint("Failed to unmarshal JSON from DB", src))
+	return errors.New(fmt.Sprint("failed to unmarshal JSONB from DB", src))
 }
 ```
 
@@ -88,7 +111,11 @@ and **What** this `Events` **Change** to our `Aggregates`. Please welcome **verb
 The `Apply` mtehtods are our **Calculators**.
 
 ```go
-// first event
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Events definition                                                                              //
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// CreatedV1 is our first event
 // json tags should be set because the struct will be serialized as JSON when saved in the eventstore
 type CreatedV1 struct {
 	ID        string `json:"id"`
@@ -96,44 +123,53 @@ type CreatedV1 struct {
 	LastName  string `json:"last_name"`
 }
 
+// Apply our event to an user aggregate
 func (eventData CreatedV1) Apply(agg goes.Aggregate, event goes.Event) {
 	user := agg.(*User)
 	user.ID = eventData.ID
 	user.FirstName = eventData.FirstName
 	user.LastName = eventData.LastName
 	user.CreatedAt = event.Timestamp
+	user.Addresses = addresses{}
 }
 
+// AggregateType is our target aggregate type
 func (CreatedV1) AggregateType() string {
 	return "user"
 }
 
+// Action is the performed action, in past tense
 func (CreatedV1) Action() string {
 	return "created"
 }
 
+// Version is the event's verion
 func (CreatedV1) Version() uint64 {
 	return 1
 }
 
-// second event
+// FirstNameUpdatedV1 is our second event
 type FirstNameUpdatedV1 struct {
 	FirstName string `json:"first_name"`
 }
 
+// Apply our event to an user aggregate
 func (eventData FirstNameUpdatedV1) Apply(agg goes.Aggregate, event goes.Event) {
 	user := agg.(*User)
 	user.FirstName = eventData.FirstName
 }
 
+// AggregateType is our target aggregate type
 func (FirstNameUpdatedV1) AggregateType() string {
 	return "user"
 }
 
+// Action is the performed action, in past tense
 func (FirstNameUpdatedV1) Action() string {
 	return "first_name_updated"
 }
 
+// Version is the event's verion
 func (FirstNameUpdatedV1) Version() uint64 {
 	return 1
 }
@@ -144,29 +180,43 @@ And finally, we should describe **How** we can perform these acions (`Event`s): 
 event.
 
 ```go
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Commands definition                                                                            //
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// ValidationError is a custom validation error type
+type ValidationError error
+
+// NewValidationError returns a new ValidationError
+func NewValidationError(message string) ValidationError {
+	return errors.New(message).(ValidationError)
+}
+
 func validateFirstName(firstName string) error {
 	length := len(firstName)
 
 	if length < 3 {
-		return ValidationError{"FirstName is too short"}
+		return NewValidationError("FirstName is too short")
 	} else if length > 42 {
-		return ValidationError{"FirstName is too long"}
+		return NewValidationError("FirstName is too long")
 	}
 	return nil
 }
 
-// first command: Create
+// Create is our first command to create an user
 type Create struct {
 	FirstName string
 	LastName  string
 }
 
-func (c Create) Validate(agg interface{}) error {
+// Validate the command's validity against our business logic and the current application state
+func (c Create) Validate(tx *gorm.DB, agg interface{}) error {
 	// user := *agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
 }
 
+// BuildEvent returns the CreatedV1 event
 func (c Create) BuildEvent() (interface{}, interface{}, error) {
 	return CreatedV1{
 		ID:        "MyNotSoRandomUUID",
@@ -175,35 +225,66 @@ func (c Create) BuildEvent() (interface{}, interface{}, error) {
 	}, nil, nil
 }
 
-// second command: UpdateFirstName
+// AggregateType returns the target aggregate type
+func (c Create) AggregateType() string {
+	return "user"
+}
+
+// UpdateFirstName is our second command to update the user's firstname
 type UpdateFirstName struct {
 	FirstName string
 }
 
-func (c UpdateFirstName) Validate(agg interface{}) error {
+// Validate the command's validity against our business logic and the current application state
+func (c UpdateFirstName) Validate(tx *gorm.DB, agg interface{}) error {
 	// user := agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
 }
 
+// BuildEvent returns the FirstNameUpdatedV1 event
 func (c UpdateFirstName) BuildEvent() (interface{}, interface{}, error) {
 	return FirstNameUpdatedV1{
 		FirstName: c.FirstName,
 	}, nil, nil
 }
 
+// AggregateType returns the target aggregate type
+func (c UpdateFirstName) AggregateType() string {
+	return "user"
+}
+
+func initDB(dbConn string, logMode bool) error {
+	var err error
+
+	db, err := gorm.Open("postgres", dbConn)
+	if err != nil {
+		return err
+	}
+	db.LogMode(logMode)
+
+	return goes.Init(db)
+}
 
 func main() {
+
+	// configure the database
+	err := initDB(os.Getenv("DATABASE_URL"), true)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var user User
+
 	command := Create{
 		FirstName: "Sylvain",
-		LastName: "Kerkour",
+		LastName:  "Kerkour",
 	}
-	metadata := goes.Metdata{
+	metadata := goes.Metadata{
 		"request_id": "my request id",
 	}
 
-	_, err := goes.Execute(&user, command, metadata) // no metadata
+	_, err = goes.Execute(command, &user, metadata) // no metadata
 	if err != nil {
 		log.Fatal(err)
 	}
