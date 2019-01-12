@@ -144,7 +144,7 @@ type Create struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c Create) Validate(tx *goes.Store, agg interface{}) error {
+func (c Create) Validate(tx goes.Store, agg interface{}) error {
 	// user := *agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
@@ -170,7 +170,7 @@ type UpdateFirstName struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c UpdateFirstName) Validate(tx *goes.Store, agg interface{}) error {
+func (c UpdateFirstName) Validate(tx goes.Store, agg interface{}) error {
 	// user := agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
@@ -189,7 +189,6 @@ func (c UpdateFirstName) AggregateType() string {
 }
 
 func main() {
-
 	// configure the database
 	err := goes.Init(os.Getenv("DATABASE_URL"))
 	if err != nil {

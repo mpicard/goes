@@ -7,6 +7,9 @@ import (
 // Store is a type alias to avoid user to import gorm (and thus avoid version problems)
 type Store = *gorm.DB
 
+// Transaction is a type alias
+type Transaction = *gorm.DB
+
 // DB should be the only one way to access the DB in your application
 var DB Store
 
