@@ -9,7 +9,7 @@
 [![GitHub release](https://img.shields.io/github/release/bloom42/goes.svg)](https://github.com/bloom42/goes/releases)
 [![Build Status](https://travis-ci.org/bloom42/goes.svg?branch=master)](https://travis-ci.org/bloom42/goes)
 
-`goes` is an opinionated transactional event sourcing / CQRS transactional framework using PostgreSQL as both event
+`goes` is an opinionated transactional event sourcing / CQRS framework using PostgreSQL as both event
 store and query store.
 It handles all the event dispatching, serialization, deserialization, persistence and command execution
 logic for you.
