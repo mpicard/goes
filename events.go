@@ -17,8 +17,8 @@ var eventRegistry = map[string]reflect.Type{}
 // Metadata is a simple map to store event's metadata
 type Metadata = map[string]interface{}
 
-// EventInterface should be implemented by each custom event (data) you define
-type EventInterface interface {
+// EventData should be implemented by each custom event (data) you define
+type EventData interface {
 	AggregateType() string
 	Action() string
 	Version() uint64
@@ -42,7 +42,7 @@ type Event struct {
 
 // Apply apply the event's data `Apply` method to the aggregate and then update aggregate's version
 func (event Event) apply(aggregate Aggregate) {
-	event.Data.(EventInterface).Apply(aggregate, event)
+	event.Data.(EventData).Apply(aggregate, event)
 	aggregate.incrementVersion()
 	aggregate.updateUpdatedAt(event.Timestamp)
 }
@@ -61,7 +61,7 @@ type StoreEvent struct {
 	RawMetadata postgres.Jsonb `json:"-" gorm:"type:jsonb;column:metadata"`
 }
 
-func buildBaseEvent(evi EventInterface, metadata Metadata, nonPersisted interface{}, aggregateID string) Event {
+func buildBaseEvent(evi EventData, metadata Metadata, nonPersisted interface{}, aggregateID string) Event {
 	event := Event{}
 	uuidV4, _ := uuid.NewRandom()
 
@@ -84,7 +84,7 @@ func buildBaseEvent(evi EventInterface, metadata Metadata, nonPersisted interfac
 
 // Register should be used at the beginning of your application to register all
 // your events types for a given aggregate
-func Register(aggregate Aggregate, events ...EventInterface) {
+func Register(aggregate Aggregate, events ...EventData) {
 
 	for _, event := range events {
 		eventType := event.AggregateType() +

@@ -71,7 +71,7 @@ func ExecuteTx(tx Transaction, command Command, aggregate Aggregate, metadata Me
 		return Event{}, err
 	}
 
-	event := buildBaseEvent(data.(EventInterface), metadata, nonPersisted, aggregate.GetID())
+	event := buildBaseEvent(data.(EventData), metadata, nonPersisted, aggregate.GetID())
 	event.Data = data
 	event.apply(aggregate)
 	// in Case of Create event

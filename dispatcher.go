@@ -26,7 +26,7 @@ type eventBusSubscription struct {
 var eventBus = []eventBusSubscription{}
 
 // MatchEvent matches a specific event type, nil events never match.
-func MatchEvent(t EventInterface) EventMatcher {
+func MatchEvent(t EventData) EventMatcher {
 	eventType := t.AggregateType() +
 		"." + t.Action() +
 		"." + strconv.FormatUint(t.Version(), 10)
@@ -48,7 +48,7 @@ func MatchAny() EventMatcher {
 // MatchAggregate matches a specific aggregate type, nil events never match
 func MatchAggregate(t Aggregate) EventMatcher {
 	return func(event Event) bool {
-		data := event.Data.(EventInterface)
+		data := event.Data.(EventData)
 		return data.AggregateType() == t.Type()
 	}
 }
@@ -66,7 +66,7 @@ func MatchAnyOf(matchers ...EventMatcher) EventMatcher {
 }
 
 // MatchAnyEventOf matches if any of several matchers matches
-func MatchAnyEventOf(events ...EventInterface) EventMatcher {
+func MatchAnyEventOf(events ...EventData) EventMatcher {
 	return func(e Event) bool {
 		for _, t := range events {
 			if MatchEvent(t)(e) {
