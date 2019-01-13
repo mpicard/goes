@@ -8,7 +8,7 @@ import (
 // Command s are executed on aggregates and generate events
 type Command interface {
 	BuildEvent() (event interface{}, nonPersisted interface{}, err error)
-	Validate(tx Transaction, aggregate interface{}) error
+	Validate(tx Tx, aggregate interface{}) error
 	AggregateType() string
 }
 
@@ -34,7 +34,7 @@ func Execute(command Command, aggregate Aggregate, metadata Metadata) (Event, er
 // ExecuteTx execute the given command to the given aggregate.
 // aggregate is a pointer
 // if no error happen it returns the created event, and mutate the given aggregate
-func ExecuteTx(tx Transaction, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
+func ExecuteTx(tx Tx, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
 	var err error
 
 	// verify that the aggregate is a pointer

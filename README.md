@@ -209,7 +209,7 @@ type Create struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c Create) Validate(tx goes.Transaction, agg interface{}) error {
+func (c Create) Validate(tx goes.Tx, agg interface{}) error {
 	// user := *agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
@@ -235,7 +235,7 @@ type UpdateFirstName struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c UpdateFirstName) Validate(tx goes.Transaction, agg interface{}) error {
+func (c UpdateFirstName) Validate(tx goes.Tx, agg interface{}) error {
 	// user := agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)

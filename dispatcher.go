@@ -10,7 +10,7 @@ type AsyncReactor = func(Event) error
 
 // SyncReactor are reactors that execute in the same transaction than the event's one and thus can
 // fail it in case of error.
-type SyncReactor = func(Transaction, Event) error
+type SyncReactor = func(Tx, Event) error
 
 // EventMatcher is a func that can match event to a criteria.
 type EventMatcher func(Event) bool
