@@ -9,7 +9,7 @@ type Aggregate interface {
 	GetID() string
 	incrementVersion()
 	updateUpdatedAt(time.Time)
-	Type() string
+	AggregateType() string
 }
 
 // BaseAggregate should be embedded in all your aggregates

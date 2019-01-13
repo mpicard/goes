@@ -48,11 +48,11 @@ func ExecuteTx(tx Transaction, command Command, aggregate Aggregate, metadata Me
 	}
 
 	// check that command.AggregateType and aggregate.Type match
-	if command.AggregateType() != aggregate.Type() {
+	if command.AggregateType() != aggregate.AggregateType() {
 		return Event{}, fmt.Errorf(
 			"command's aggregate type (%s) and aggregate type (%s) mismatch",
 			command.AggregateType(),
-			aggregate.Type(),
+			aggregate.AggregateType(),
 		)
 	}
 

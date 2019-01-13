@@ -49,7 +49,7 @@ func MatchAny() EventMatcher {
 func MatchAggregate(t Aggregate) EventMatcher {
 	return func(event Event) bool {
 		data := event.Data.(EventData)
-		return data.AggregateType() == t.Type()
+		return data.AggregateType() == t.AggregateType()
 	}
 }
 
