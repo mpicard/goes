@@ -1,8 +1,5 @@
 cloud.google.com/go v0.34.0 h1:eOI3/cP2VTU6uZLDYAoic+eyzzB9YyGmJ7eIjl8rOPg=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
-github.com/bloom42/goes v0.19.1/go.mod h1:TkIxXJD7+Q2AfmGhT0gUzTyM1Z/bwPssNwuQtKnBPAs=
-github.com/bloom42/goes/examples/user v0.0.0-20190113211223-1288064f8009 h1:AI4Fit+9JlxfiY/JaJek6tNbuMfqO0GbjBXjP4nmnHk=
-github.com/bloom42/goes/examples/user v0.0.0-20190113211223-1288064f8009/go.mod h1:9TbIhrmX/zTo3aA3nB5Cv7Kd/GC/+tTtT6BSfqoN8go=
 github.com/denisenkom/go-mssqldb v0.0.0-20190111225525-2fea367d496d h1:M0bjbJ5PZPl4iKkt0FSvhfSCJI9NisDDda29jXN9i0c=
 github.com/denisenkom/go-mssqldb v0.0.0-20190111225525-2fea367d496d/go.mod h1:xN/JuLBIz4bjkxNmByTiV1IbhfnYb6oo99phBn4Eqhc=
 github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 h1:Yzb9+7DPaBjB8zlTR87/ElzFsnQfuHnVUVqpZZIcV5Y=
