@@ -10,6 +10,7 @@ type Aggregate interface {
 	incrementVersion()
 	updateUpdatedAt(time.Time)
 	AggregateType() string
+	TableName() string
 }
 
 // BaseAggregate should be embedded in all your aggregates
