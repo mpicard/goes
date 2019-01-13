@@ -76,8 +76,8 @@ type User struct {
 	Addresses addresses `gorm:"type:jsonb;column:addresses"`
 }
 
-// Type is our aggregate type
-func (user *User) Type() string {
+// AggregateType is our aggregate type
+func (user *User) AggregateType() string {
 	return "user"
 }
 
