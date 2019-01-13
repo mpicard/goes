@@ -9,7 +9,7 @@
 [![GitHub release](https://img.shields.io/github/release/bloom42/goes.svg)](https://github.com/bloom42/goes/releases)
 [![Build Status](https://travis-ci.org/bloom42/goes.svg?branch=master)](https://travis-ci.org/bloom42/goes)
 
-`goes` is an opinionated event sourcing / CQRS transactional framework using PostgreSQL as both event
+`goes` is an opinionated transactional event sourcing / CQRS framework using PostgreSQL as both event
 store and query store.
 It handles all the event dispatching, serialization, deserialization, persistence and command execution
 logic for you.
@@ -35,7 +35,7 @@ can be used to send non hashed tokens to a `SendEmail` reactor for example.
 
 * **Aggregates** represent the current state of the application. They are the read model.
 
-* **Calculators** are usedto update the state of the application. This is the `Apply` method of `EventData`.
+* **Calculators** are used to update the state of the application. This is the `Apply` method of `EventData`.
 
 * **Reactors** are used to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Execute` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Execute` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
 
