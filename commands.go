@@ -7,7 +7,7 @@ import (
 
 // Command s are executed on aggregates and generate events
 type Command interface {
-	BuildEvent() (event interface{}, nonPersisted interface{}, err error)
+	BuildEvent() (event EventData, nonPersisted interface{}, err error)
 	Validate(tx Tx, aggregate interface{}) error
 	AggregateType() string
 }
