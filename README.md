@@ -274,10 +274,10 @@ func main() {
 		LastName:  "Kerkour",
 	}
 	metadata := goes.Metadata{
-		"request_id": "my request id",
+		"request_id": "my_request_id",
 	}
 
-	_, err = goes.Execute(command, &user, metadata) // no metadata
+	_, err = goes.Execute(command, &user, metadata)
 	if err != nil {
 		log.Fatal(err)
 	}
