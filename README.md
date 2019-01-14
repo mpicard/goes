@@ -40,7 +40,7 @@ can be used to send non hashed tokens to a `SendEmail` reactor for example.
 
 * **Reactors**: are used to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Execute` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Execute` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
 
-* **Event store**: The write model, were events are persisted (PostgreSQL).
+* **Event store**: The write model, where events are persisted (PostgreSQL).
 
 * **Query store**: The read model, where aggregates are persisted (PostgreSQL).
 
