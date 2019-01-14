@@ -14,6 +14,7 @@ store and query store.
 It handles all the event dispatching, serialization, deserialization, persistence and command execution
 logic for you.
 
+![Dataflow diagram](/docs/dataflow.jpg)
 
 1. [Glossary](#glossary)
 2. [Usage](#usage)
