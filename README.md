@@ -1,6 +1,6 @@
 <p align="center">
-  <h3 align="center">GO ES</h3>
-  <p align="center">Go event sourcing made easy</p>
+  <h3 align="center">GOES</h3>
+  <p align="center">Go Event Sourcing made easy</p>
 </p>
 
 --------
