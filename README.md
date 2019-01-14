@@ -14,35 +14,40 @@ store and query store.
 It handles all the event dispatching, serialization, deserialization, persistence and command execution
 logic for you.
 
-![Dataflow diagram](/docs/dataflow.jpg)
 
 1. [Glossary](#glossary)
-2. [Usage](#usage)
-3. [Notes](#notes)
-4. [Resources](#resources)
-5. [License](#license)
+2. [Dataflow](#dataflow)
+3. [Usage](#usage)
+4. [Notes](#notes)
+5. [Resources](#resources)
+6. [License](#license)
 
 -------------------
 
 
 ## Glossary
 
-* **Commands** Commands are responsible for: validating data, validating that the action can
+* **Commands**: Commands are responsible for: validating data, validating that the action can
 be performed given the current state of the application and Building the event.
 A `Command` returns 1 `Event` + optionnaly 1 non persisted event. The non persisted event
 can be used to send non hashed tokens to a `SendEmail` reactor for example.
 
-* **Events** are the source of truth. They are applied to `Aggregates`
+* **Events**: are the source of truth. They are applied to `Aggregates`
 
-* **Aggregates** represent the current state of the application. They are the read model.
+* **Aggregates**: represent the current state of the application. They are the read model.
 
-* **Calculators** are used to update the state of the application. This is the `Apply` method of `EventData`.
+* **Calculators**: are used to update the state of the application. This is the `Apply` method of `EventData`.
 
-* **Reactors** are used to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Execute` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Execute` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
+* **Reactors**: are used to trigger side effects as events happen. They are registered with the `On` Function. There is `Sync Reactors` which are called synchronously in the `Execute` function, and can fail the transaction if an error occur, and `Async Reactor` which are called asynchronously, and are not checked for error (fire and forget). They are not triggered by the `Apply` method but in the `Execute` function, thus they **are not** triggered when you replay events. You can triggers them when replaying by using `Dispatch(event)`.
 
-* **Event store** PostgresSQL
+* **Event store**: The write model, were events are persisted (PostgreSQL).
 
-* **Query store** PostgresSQL
+* **Query store**: The read model, where aggregates are persisted (PostgreSQL).
+
+
+## Dataflow
+
+![Dataflow diagram](/docs/dataflow.jpg)
 
 ## Usage
 
