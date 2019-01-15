@@ -8,7 +8,7 @@ import (
 // Command s are executed on aggregates and generate events
 type Command interface {
 	BuildEvent() (event EventData, nonPersisted interface{}, err error)
-	Validate(tx Tx, aggregate interface{}) error
+	Validate(tx Tx, aggregate Aggregate) error
 	AggregateType() string
 }
 
@@ -71,7 +71,7 @@ func ExecuteTx(tx Tx, command Command, aggregate Aggregate, metadata Metadata) (
 		return Event{}, err
 	}
 
-	event := buildBaseEvent(data.(EventData), metadata, nonPersisted, aggregate.GetID())
+	event := buildBaseEvent(data, metadata, nonPersisted, aggregate.GetID())
 	event.Data = data
 	event.apply(aggregate)
 	// in Case of Create event
