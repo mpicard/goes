@@ -25,6 +25,42 @@ type eventBusSubscription struct {
 // eventBus is a global in-memory bus within each event flow before getting saved in event store
 var eventBus = []eventBusSubscription{}
 
+// On is used to register `SyncReactor` and `AsyncReactor` to react to `Event`s
+func On(matcher EventMatcher, sync []SyncReactor, async []AsyncReactor) {
+	if sync == nil {
+		sync = []SyncReactor{}
+	}
+	if async == nil {
+		async = []AsyncReactor{}
+	}
+
+	subscription := eventBusSubscription{
+		matcher: matcher,
+		sync:    sync,
+		async:   async,
+	}
+
+	eventBus = append(eventBus, subscription)
+}
+
+func dispatch(tx Store, event Event) error {
+	for _, subscription := range eventBus {
+		// dispatch sync reactor synchronously
+		// it can be something like a projection
+		for _, syncReactor := range subscription.sync {
+			if err := syncReactor(tx, event); err != nil {
+				return err
+			}
+		}
+
+		// dispatch async reactors asynchronously
+		for _, asyncReactor := range subscription.async {
+			go asyncReactor(event)
+		}
+	}
+	return nil
+}
+
 // MatchEvent matches a specific event type, nil events never match.
 func MatchEvent(t EventData) EventMatcher {
 	eventType := t.AggregateType() +
@@ -75,40 +111,4 @@ func MatchAnyEventOf(events ...EventData) EventMatcher {
 		}
 		return false
 	}
-}
-
-// On is used to register `SyncReactor` and `AsyncReactor` to react to `Event`s
-func On(matcher EventMatcher, sync []SyncReactor, async []AsyncReactor) {
-	if sync == nil {
-		sync = []SyncReactor{}
-	}
-	if async == nil {
-		async = []AsyncReactor{}
-	}
-
-	subscription := eventBusSubscription{
-		matcher: matcher,
-		sync:    sync,
-		async:   async,
-	}
-
-	eventBus = append(eventBus, subscription)
-}
-
-func dispatch(tx Store, event Event) error {
-	for _, subscription := range eventBus {
-		// dispatch sync reactor synchronously
-		// it can be something like a projection
-		for _, syncReactor := range subscription.sync {
-			if err := syncReactor(tx, event); err != nil {
-				return err
-			}
-		}
-
-		// dispatch async reactors asynchronously
-		for _, asyncReactor := range subscription.async {
-			go asyncReactor(event)
-		}
-	}
-	return nil
 }
