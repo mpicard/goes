@@ -45,17 +45,20 @@ func On(matcher EventMatcher, sync []SyncReactor, async []AsyncReactor) {
 
 func dispatch(tx Store, event Event) error {
 	for _, subscription := range eventBus {
-		// dispatch sync reactor synchronously
-		// it can be something like a projection
-		for _, syncReactor := range subscription.sync {
-			if err := syncReactor(tx, event); err != nil {
-				return err
-			}
-		}
 
-		// dispatch async reactors asynchronously
-		for _, asyncReactor := range subscription.async {
-			go asyncReactor(event)
+		if subscription.matcher(event) {
+			// dispatch sync reactor synchronously
+			// it can be something like a projection
+			for _, syncReactor := range subscription.sync {
+				if err := syncReactor(tx, event); err != nil {
+					return err
+				}
+			}
+
+			// dispatch async reactors asynchronously
+			for _, asyncReactor := range subscription.async {
+				go asyncReactor(event)
+			}
 		}
 	}
 	return nil
