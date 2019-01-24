@@ -20,7 +20,8 @@ logic for you.
 3. [Usage](#usage)
 4. [Notes](#notes)
 5. [Resources](#resources)
-6. [License](#license)
+6. [Contributing](#contributing)
+7. [License](#license)
 
 -------------------
 
@@ -304,6 +305,12 @@ This implementation is sort of the Go implementation of the following event sour
 * https://kickstarter.engineering/event-sourcing-made-simple-4a2625113224
 * https://github.com/mishudark/eventhus
 * https://github.com/looplab/eventhorizon
+
+
+## Contributing
+
+See [https://opensource.bloom.sh/contributing](https://opensource.bloom.sh/contributing)
+
 
 
 ## License
