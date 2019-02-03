@@ -312,7 +312,6 @@ This implementation is sort of the Go implementation of the following event sour
 See [https://opensource.bloom.sh/contributing](https://opensource.bloom.sh/contributing)
 
 
-
 ## License
 
 See `LICENSE.txt` and [https://opensource.bloom.sh/licensing](https://opensource.bloom.sh/licensing)
