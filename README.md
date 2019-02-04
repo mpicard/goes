@@ -347,6 +347,7 @@ func main() {
 	// 	LastName: "Kerkour",
 	// }
 
+	queryUserEvents(user.ID)
 	time.Sleep(5 * time.Second) // for the async reactor
 }
 ```
