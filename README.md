@@ -274,10 +274,9 @@ func registerUser() {
 	)
 }
 
-func asyncReactorExample(goes.Event) error {
+func asyncReactorExample(goes.Event) {
 	time.Sleep(3 * time.Second)
 	fmt.Println("hello from async reactor")
-	return nil
 }
 
 func syncReactorExample(_ goes.Tx, event goes.Event) error {

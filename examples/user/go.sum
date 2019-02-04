@@ -1,6 +1,8 @@
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/bloom42/goes v1.0.1 h1:YZp/3BbGk9VHiRdfdTEywla7o5GcRbXRRPH5LbOl0+4=
 github.com/bloom42/goes v1.0.1/go.mod h1:TkIxXJD7+Q2AfmGhT0gUzTyM1Z/bwPssNwuQtKnBPAs=
+github.com/bloom42/goes v1.0.2 h1:YBKLwYetUsoI+N5DAV+lXCXVH4CHmUU5BFlUa7UwzpY=
+github.com/bloom42/goes v1.0.2/go.mod h1:TkIxXJD7+Q2AfmGhT0gUzTyM1Z/bwPssNwuQtKnBPAs=
 github.com/denisenkom/go-mssqldb v0.0.0-20190111225525-2fea367d496d/go.mod h1:xN/JuLBIz4bjkxNmByTiV1IbhfnYb6oo99phBn4Eqhc=
 github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5/go.mod h1:a2zkGnVExMxdzMo3M0Hi/3sEU+cWnZpSni0O6/Yb/P0=
 github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
