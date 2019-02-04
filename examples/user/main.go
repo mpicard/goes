@@ -214,6 +214,24 @@ func syncReactorExample(_ goes.Tx, event goes.Event) error {
 	return nil
 }
 
+func queryUserEvents(userID string) {
+	query := "SELECT * FROM users_events WHERE aggregate_id = ?;"
+	events := []goes.StoreEvent{}
+	err := goes.DB.Raw(query, userID).Scan(&events).Error
+	if err != nil {
+		panic(err)
+	}
+
+	ret := make([]goes.Event, len(events))
+	for i, event := range events {
+		ret[i], err = event.Deserialize()
+		if err != nil {
+			panic(err)
+		}
+	}
+	fmt.Println(ret)
+}
+
 func main() {
 	// configure the database
 	err := goes.Init(os.Getenv("DATABASE_URL"))
@@ -250,5 +268,6 @@ func main() {
 	// 	LastName: "Kerkour",
 	// }
 
+	queryUserEvents(user.ID)
 	time.Sleep(5 * time.Second) // for the async reactor
 }

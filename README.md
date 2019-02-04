@@ -187,7 +187,7 @@ func (FirstNameUpdatedV1) Version() uint64 {
 }
 ```
 
-And finally, we should describe **how** we can perform these acions (`Event`s): this is our
+then we should describe **how** we can perform these acions (`Event`s): this is our
 `Command`s. They are responsible to validate the command against our current state and build the
 event.
 ```go
@@ -264,7 +264,10 @@ func (c UpdateFirstName) BuildEvent() (goes.EventData, interface{}, error) {
 func (c UpdateFirstName) AggregateType() string {
 	return "user"
 }
+```
 
+then we can add some **reactors** to react to our events.
+```go
 // We register the User aggregate with all it's associated events
 func registerUser() {
 	goes.Register(
@@ -284,6 +287,29 @@ func syncReactorExample(_ goes.Tx, event goes.Event) error {
 	fmt.Printf("User created: %s %s\n", createdEvent.FirstName, createdEvent.LastName)
 	return nil
 }
+```
+
+And finally we can query both our store and our event store using `goes.DB`.
+
+```go
+func queryUserEvents(userID string) {
+	query := "SELECT * FROM users_events WHERE aggregate_id = ?;"
+	events := []goes.StoreEvent{}
+	err := goes.DB.Raw(query, userID).Scan(&events).Error
+	if err != nil {
+		panic(err)
+	}
+
+	ret := make([]goes.Event, len(events))
+	for i, event := range events {
+		ret[i], err = event.Deserialize()
+		if err != nil {
+			panic(err)
+		}
+	}
+	fmt.Println(ret)
+}
+
 
 func main() {
 	// configure the database
