@@ -265,6 +265,27 @@ func (c UpdateFirstName) AggregateType() string {
 	return "user"
 }
 
+// We register the User aggregate with all it's associated events
+func registerUser() {
+	goes.Register(
+		&User{},
+		FirstNameUpdatedV1{},
+		CreatedV1{},
+	)
+}
+
+func asyncReactorExample(goes.Event) error {
+	time.Sleep(3 * time.Second)
+	fmt.Println("hello from async reactor")
+	return nil
+}
+
+func syncReactorExample(_ goes.Tx, event goes.Event) error {
+	createdEvent := event.Data.(CreatedV1)
+	fmt.Printf("User created: %s %s\n", createdEvent.FirstName, createdEvent.LastName)
+	return nil
+}
+
 func main() {
 	// configure the database
 	err := goes.Init(os.Getenv("DATABASE_URL"))
@@ -272,6 +293,13 @@ func main() {
 		log.Fatal(err)
 	}
 	goes.DB.LogMode(true)
+
+	registerUser()
+	goes.On(
+		goes.MatchEvent(CreatedV1{}),
+		[]goes.SyncReactor{syncReactorExample},
+		[]goes.AsyncReactor{asyncReactorExample},
+	)
 
 	var user User
 
@@ -293,6 +321,8 @@ func main() {
 	// 	FirstName: "Sylvain",
 	// 	LastName: "Kerkour",
 	// }
+
+	time.Sleep(5 * time.Second) // for the async reactor
 }
 ```
 

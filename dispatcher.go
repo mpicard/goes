@@ -6,7 +6,7 @@ import (
 
 // AsyncReactor are reactors which don't care about the event's insertion transaction, they
 // are executed asynchronously (in they own goroutine)
-type AsyncReactor = func(Event) error
+type AsyncReactor = func(Event)
 
 // SyncReactor are reactors that execute in the same transaction than the event's one and thus can
 // fail it in case of error.
