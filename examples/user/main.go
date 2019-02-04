@@ -28,12 +28,17 @@ func (user *User) AggregateType() string {
 	return "user"
 }
 
-// a subfield used as a JSONB column
+// TableName is our postgres table
+func (user *User) TableName() string {
+	return "users"
+}
+
 type address struct {
 	Country string `json:"country"`
 	Region  string `json:"region"`
 }
 
+// a subfield used as a JSONB column
 type addresses []address
 
 // Value is used to serialize to SQL
@@ -144,16 +149,16 @@ type Create struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c Create) Validate(tx goes.Tx, agg interface{}) error {
+func (c Create) Validate(tx goes.Tx, agg goes.Aggregate) error {
 	// user := *agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
 }
 
 // BuildEvent returns the CreatedV1 event
-func (c Create) BuildEvent() (interface{}, interface{}, error) {
+func (c Create) BuildEvent() (goes.EventData, interface{}, error) {
 	return CreatedV1{
-		ID:        "MyNotSoRandomUUID",
+		ID:        "0563019f-ade9-4cb1-81a7-4f1bb3213cb0",
 		FirstName: c.FirstName,
 		LastName:  c.LastName,
 	}, nil, nil
@@ -170,14 +175,14 @@ type UpdateFirstName struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c UpdateFirstName) Validate(tx goes.Tx, agg interface{}) error {
+func (c UpdateFirstName) Validate(tx goes.Tx, agg goes.Aggregate) error {
 	// user := agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
 }
 
 // BuildEvent returns the FirstNameUpdatedV1 event
-func (c UpdateFirstName) BuildEvent() (interface{}, interface{}, error) {
+func (c UpdateFirstName) BuildEvent() (goes.EventData, interface{}, error) {
 	return FirstNameUpdatedV1{
 		FirstName: c.FirstName,
 	}, nil, nil
@@ -212,7 +217,7 @@ func main() {
 	}
 	fmt.Println(user)
 	// User {
-	// 	ID: "MyNotSoRandomUUID",
+	// 	ID: "0563019f-ade9-4cb1-81a7-4f1bb3213cb0",
 	// 	FirstName: "Sylvain",
 	// 	LastName: "Kerkour",
 	// }
