@@ -277,12 +277,12 @@ func registerUser() {
 	)
 }
 
-func asyncReactorExample(goes.Event) {
+func asyncReactorExample(context.Context, goes.Event) {
 	time.Sleep(3 * time.Second)
 	fmt.Println("hello from async reactor")
 }
 
-func syncReactorExample(_ goes.Tx, event goes.Event) error {
+func syncReactorExample(_ context.Context, _ goes.Tx, event goes.Event) error {
 	createdEvent := event.Data.(CreatedV1)
 	fmt.Printf("User created: %s %s\n", createdEvent.FirstName, createdEvent.LastName)
 	return nil
@@ -336,7 +336,7 @@ func main() {
 		"request_id": "my_request_id",
 	}
 
-	_, err = goes.Execute(command, &user, metadata)
+	_, err = goes.Execute(context.Background(), command, &user, metadata)
 	if err != nil {
 		log.Fatal(err)
 	}
