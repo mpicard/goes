@@ -6,10 +6,10 @@ all: test build
 
 test:
 	go tool vet -all -shadowstrict .
-	go test -v -race ./...
+	go test -v -race .
 
 build:
-	go build ./...
+	go build .
 
 release:
 	git tag v$(VERSION)

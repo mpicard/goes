@@ -15,8 +15,6 @@ git:
   submodules: false
 
 before_script:
-  - go get -u github.com/bloom42/rocket
-  - go get
   - make test
 
 script:
@@ -25,7 +23,9 @@ script:
 deploy:
   provider: script
   skip_cleanup: true # Important, otherwise the build output would be purged.
-  script: rocket # use rocket to deploy
+  script:
+    - go get -u github.com/bloom42/rocket
+    - rocket # use rocket to deploy
   on:
     tags: true # The deployment happens only if the commit has a tag
 
