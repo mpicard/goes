@@ -1,6 +1,7 @@
 package goes
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 )
@@ -13,10 +14,10 @@ type Command interface {
 }
 
 // Execute a command to an aggregate
-func Execute(command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
+func Execute(ctx context.Context, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
 	tx := DB.Begin()
 
-	event, err := ExecuteTx(tx, command, aggregate, metadata)
+	event, err := ExecuteTx(ctx, tx, command, aggregate, metadata)
 	if err != nil {
 		tx.Rollback()
 		return Event{}, err
@@ -34,7 +35,7 @@ func Execute(command Command, aggregate Aggregate, metadata Metadata) (Event, er
 // ExecuteTx execute the given command to the given aggregate.
 // aggregate is a pointer
 // if no error happen it returns the created event, and mutate the given aggregate
-func ExecuteTx(tx Tx, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
+func ExecuteTx(ctx context.Context, tx Tx, command Command, aggregate Aggregate, metadata Metadata) (Event, error) {
 	var err error
 
 	// verify that the aggregate is a pointer
@@ -92,7 +93,7 @@ func ExecuteTx(tx Tx, command Command, aggregate Aggregate, metadata Metadata) (
 		return Event{}, err
 	}
 
-	err = dispatch(tx, event)
+	err = dispatch(ctx, tx, event)
 	if err != nil {
 		return Event{}, err
 	}

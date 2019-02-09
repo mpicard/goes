@@ -1,16 +1,17 @@
 package goes
 
 import (
+	"context"
 	"strconv"
 )
 
 // AsyncReactor are reactors which don't care about the event's insertion transaction, they
 // are executed asynchronously (in they own goroutine)
-type AsyncReactor = func(Event)
+type AsyncReactor = func(context.Context, Event)
 
 // SyncReactor are reactors that execute in the same transaction than the event's one and thus can
 // fail it in case of error.
-type SyncReactor = func(Tx, Event) error
+type SyncReactor = func(context.Context, Tx, Event) error
 
 // EventMatcher is a func that can match event to a criteria.
 type EventMatcher func(Event) bool
@@ -43,21 +44,21 @@ func On(matcher EventMatcher, sync []SyncReactor, async []AsyncReactor) {
 	eventBus = append(eventBus, subscription)
 }
 
-func dispatch(tx Store, event Event) error {
+func dispatch(ctx context.Context, tx Store, event Event) error {
 	for _, subscription := range eventBus {
 
 		if subscription.matcher(event) {
 			// dispatch sync reactor synchronously
 			// it can be something like a projection
 			for _, syncReactor := range subscription.sync {
-				if err := syncReactor(tx, event); err != nil {
+				if err := syncReactor(ctx, tx, event); err != nil {
 					return err
 				}
 			}
 
 			// dispatch async reactors asynchronously
 			for _, asyncReactor := range subscription.async {
-				go asyncReactor(event)
+				go asyncReactor(ctx, event)
 			}
 		}
 	}
