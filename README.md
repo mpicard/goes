@@ -61,6 +61,7 @@ So we start by declaring an `Aggregate` (a read model).
 package main
 
 import (
+	"context"
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
@@ -221,14 +222,14 @@ type Create struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c Create) Validate(tx goes.Tx, agg goes.Aggregate) error {
+func (c Create) Validate(_ context.Context, tx goes.Tx, agg goes.Aggregate) error {
 	// user := *agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
 }
 
 // BuildEvent returns the CreatedV1 event
-func (c Create) BuildEvent() (goes.EventData, interface{}, error) {
+func (c Create) BuildEvent(context.Context) (goes.EventData, interface{}, error) {
 	return CreatedV1{
 		ID:        "0563019f-ade9-4cb1-81a7-4f1bb3213cb0",
 		FirstName: c.FirstName,
@@ -247,14 +248,14 @@ type UpdateFirstName struct {
 }
 
 // Validate the command's validity against our business logic and the current application state
-func (c UpdateFirstName) Validate(tx goes.Tx, agg goes.Aggregate) error {
+func (c UpdateFirstName) Validate(_ context.Context, tx goes.Tx, agg goes.Aggregate) error {
 	// user := agg.(*User)
 	// _ = user
 	return validateFirstName(c.FirstName)
 }
 
 // BuildEvent returns the FirstNameUpdatedV1 event
-func (c UpdateFirstName) BuildEvent() (goes.EventData, interface{}, error) {
+func (c UpdateFirstName) BuildEvent(context.Context) (goes.EventData, interface{}, error) {
 	return FirstNameUpdatedV1{
 		FirstName: c.FirstName,
 	}, nil, nil

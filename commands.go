@@ -8,8 +8,8 @@ import (
 
 // Command s are executed on aggregates and generate events
 type Command interface {
-	BuildEvent() (event EventData, nonPersisted interface{}, err error)
-	Validate(tx Tx, aggregate Aggregate) error
+	BuildEvent(context.Context) (event EventData, nonPersisted interface{}, err error)
+	Validate(context.Context, Tx, Aggregate) error
 	AggregateType() string
 }
 
@@ -62,12 +62,12 @@ func ExecuteTx(ctx context.Context, tx Tx, command Command, aggregate Aggregate,
 		tx.Set("gorm:query_option", "FOR UPDATE").First(aggregate)
 	}
 
-	err = command.Validate(tx, aggregate)
+	err = command.Validate(ctx, tx, aggregate)
 	if err != nil {
 		return Event{}, err
 	}
 
-	data, nonPersisted, err := command.BuildEvent()
+	data, nonPersisted, err := command.BuildEvent(ctx)
 	if err != nil {
 		return Event{}, err
 	}
