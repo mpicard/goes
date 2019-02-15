@@ -2,6 +2,7 @@ package goes
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"strconv"
 	"time"
@@ -128,10 +129,14 @@ func (event StoreEvent) Deserialize() (Event, error) {
 	ret := Event{}
 
 	// reflexion magic
-	eventType := event.AggregateType +
+	eventTypeStr := event.AggregateType +
 		"." + event.Action +
 		"." + strconv.FormatUint(event.Version, 10)
-	dataPointer := reflect.New(eventRegistry[eventType])
+	eventType, ok := eventRegistry[eventTypeStr]
+	if !ok {
+		return Event{}, fmt.Errorf("event type not registered: %s", eventTypeStr)
+	}
+	dataPointer := reflect.New(eventType)
 	dataValue := dataPointer.Elem()
 	iface := dataValue.Interface()
 
